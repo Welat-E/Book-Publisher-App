@@ -12,7 +12,7 @@ def login():
 @app.route('/register', methods=['POST'])
 
 
-@app.route('/forget_password', mehtods)
+@app.route('/forget_password', mehtods=['POST'])
 
 
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -24,6 +24,7 @@ def dashboard():
 @app.route('/dashboard/add_author', methods=['POST'])
 def add_author():
     '''Add Author path'''
+    #add author path from the database
     pass
 
 
