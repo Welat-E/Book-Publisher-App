@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+pip
+pip3
+pip3.12
+Python
+python3
+python3.12
