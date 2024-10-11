@@ -19,8 +19,8 @@ class Users(db.Model):
     password = db.Column(db.String)
 
     # Define a relationship between User and  Author and Publisher
-    publishers = db.relationship("Publisher", backref="users", lazy=True)
-    authors = db.relationship("Author", backref="users", lazy=True)
+    publisher = db.relationship("Publisher", backref="users", lazy=True)
+    author = db.relationship("Author", backref="users", lazy=True)
 
     def __repr__(self):
         return f"<User {self.first_name}>"
@@ -35,6 +35,7 @@ class Publisher(db.Model):
     user_id = db.Column(db.Integer)
     publisher_name = db.Column(dn.String)
 
+    # Relationship between Publisher and Publication_Details
     publication_details = db.relationship(
         "Publication_Details", backref="publisher", lazy=True
     )
@@ -43,12 +44,11 @@ class Publisher(db.Model):
         return f"<Publisher {self.publisher_name}>"
 
 
-
 class Publication_Details(db.Model):
     """
     Represents Publication_Details in the database.
     """
-    
+
     __tablename__ = "Publication_Details"
     user_id = db.Column(db.Integer)
     book_id = db.Column(db.Integer)
@@ -60,4 +60,24 @@ class Publication_Details(db.Model):
     pages = db.Column(db.Integer)
     chapters = db.Column(db.Integer)
     Link = db.Column(db.String)
+
+    #Relationship between Publication_Details and Author and Book
+    author = db.relationship("Author", backref="Publication_Details", lazy=True)
+    book = db.relationship("Book", backref="Publication_Details", lazy=True)
+
+
+class Author(db.Model):
+    """
+    Represents Authors in the database.
+    """
+
+    __tablename__ = "Author"
+    user_id = db.Column(db.Integer)
+    book_id = db.Column(db.Integer)
+    image_cover = db.Column(db.String)
+    birth_date = db.Column(db.String)
+
+    #Relationship between Author and Book
+    book = db.relationship("Book", backref="Author", lazy=True)
+
 
