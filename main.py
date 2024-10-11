@@ -4,7 +4,7 @@ db = SQLAlchemy()
 
 
 class User(db.Model):
-    __tablename__ = "users"
+    __tablename__ = "Users"
 
     user_id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
@@ -20,14 +20,14 @@ class User(db.Model):
 
 
 class Publisher(db.Model):
-    __tablename__ = "publisher"
+    __tablename__ = "Publisher"
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     publisher_name = db.Column(db.String, nullable=False)
 
 
 class Author(db.Model):
-    __tablename__ = "author"
+    __tablename__ = "Author"
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     name = db.Column(db.String, nullable=False)
@@ -36,7 +36,7 @@ class Author(db.Model):
 
 
 class Book(db.Model):
-    __tablename__ = "book"
+    __tablename__ = "Book"
 
     book_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
@@ -52,7 +52,7 @@ class Book(db.Model):
 
 
 class PublicationDetails(db.Model):
-    __tablename__ = "publication_details"
+    __tablename__ = "Publication_details"
 
     book_id = db.Column(db.Integer, db.ForeignKey("book.book_id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
