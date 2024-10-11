@@ -28,7 +28,7 @@ class Users(db.Model):
 
 class Publisher(db.Model):
     """
-    Represents a Publisher in the database
+    Represents a Publisher in the database.
     """
 
     __tablename__ = "Publisher"
@@ -43,4 +43,21 @@ class Publisher(db.Model):
         return f"<Publisher {self.publisher_name}>"
 
 
+
+class Publication_Details(db.Model):
+    """
+    Represents Publication_Details in the database.
+    """
+    
+    __tablename__ = "Publication_Details"
+    user_id = db.Column(db.Integer)
+    book_id = db.Column(db.Integer)
+    price = db.Column(db.Integer)
+    country = db.Column(db.String)
+    units = db.Column(db.Integer)
+    release_date = db.Column(db.String)
+    cover_image = db.Column(db.String)
+    pages = db.Column(db.Integer)
+    chapters = db.Column(db.Integer)
+    Link = db.Column(db.String)
 
