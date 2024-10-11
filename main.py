@@ -24,3 +24,23 @@ class Users(db.Model):
 
     def __repr__(self):
         return f"<User {self.first_name}>"
+
+
+class Publisher(db.Model):
+    """
+    Represents a Publisher in the database
+    """
+
+    __tablename__ = "Publisher"
+    user_id = db.Column(db.Integer)
+    publisher_name = db.Column(dn.String)
+
+    publication_details = db.relationship(
+        "Publication_Details", backref="publisher", lazy=True
+    )
+
+    def __repr__(self):
+        return f"<Publisher {self.publisher_name}>"
+
+
+
