@@ -1,13 +1,17 @@
-from Flask import flask, requests, render_template
+from flask import Flask, request, render_template
 
-app = flask(__name__)
+app = Flask(__name__)
 
 
-@app.route("/", methods=["POST"])
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+
+@app.route("/", methods=["GET"])
 def login():
     """Shows Login Page with name and password and a function where you can
     make forgot password"""
-    pass
+    return "Hello, world!"
 
 
 @app.route("/register", methods=["POST"])
@@ -87,3 +91,6 @@ def edit_selected_book(author_id, book_id):
 def delete_selected_book(author_id, book_id):
     """Delete a selected book"""
     pass
+
+
+@app.run

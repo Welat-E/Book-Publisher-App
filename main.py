@@ -1,6 +1,23 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import os
+
+
+app = Flask(__name__)
+
+# absolute path for the database
+base_dir = os.path.abspath(os.path.dirname(__file__))
+
+# folder for the database
+data_folder = os.path.join(base_dir, "data")
+
+if not os.path.exists("data"):
+    os.makedirs("data")  # create folder, if not there
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(data_folder, 'data.sql')}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy()
+db.init_app(app)
 
 
 class User(db.Model):
@@ -12,19 +29,22 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
 
-    #Relationships between Users and authors, books, publication_details publisher
+    # Relationships between Users and authors, books, publication_details publisher
     authors = db.relationship("Author", backref="user", lazy=True)
     books = db.relationship("Book", backref="user", lazy=True)
-    publication_details = db.relationship("PublicationDetails", backref="user", lazy=True)
+    publication_details = db.relationship(
+        "PublicationDetails", backref="user", lazy=True
+    )
     publishers = db.relationship("Publisher", backref="user", lazy=True)
 
 
 class Author(db.Model):
     __tablename__ = "Author"
+
     name = db.Column(db.String, nullable=False)
     author_image = db.Column(db.Text)
     birth_date = db.Column(db.Date)
-    user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"), primary_key=True)
 
 
 class Book(db.Model):
@@ -58,3 +78,10 @@ class Publisher(db.Model):
     publisher_name = db.Column(db.String)
 
 
+with app.app_context():
+    db.create_all()  # creates all tables from ORM classes
+
+    # saves the SQL-Schema in one file
+    with open("data/data.sql", "w") as file:
+        for table in db.metadata.sorted_tables:
+            file.write(str(table) + "\n")
