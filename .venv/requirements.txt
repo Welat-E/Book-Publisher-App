@@ -1,0 +1,3 @@
+flask
+sql_alchemy
+python-dotenv

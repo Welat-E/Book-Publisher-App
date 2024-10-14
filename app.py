@@ -81,9 +81,9 @@ def edit_selected_book(author_id, book_id):
     pass
 
 
-@app.route("/dashboard/author/<int:author_id>/books/<int:book_id>/delete", methods=["POST"])
+@app.route(
+    "/dashboard/author/<int:author_id>/books/<int:book_id>/delete", methods=["POST"]
+)
 def delete_selected_book(author_id, book_id):
     """Delete a selected book"""
     pass
-
-
