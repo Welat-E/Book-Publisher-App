@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, ses
 app = Flask(__name__)
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["POST"])
 def login():
     """Shows Login Page with name and password and a function where you can
     make forgot password"""
