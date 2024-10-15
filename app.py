@@ -1,11 +1,7 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for, flash, session
 
 app = Flask(__name__)
 
-
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
 
 @app.route("/", methods=["GET"])
 def login():
@@ -32,6 +28,13 @@ def dashboard():
     pass
 
 
+@app.route("/dashboard/author/<int:id>", methods=["GET", "POST"])
+def author():
+    """Shows informations about the selected author, a pic and their books,
+    which you can edit, add, delete etc."""
+    pass
+
+
 @app.route("/dashboard/add_author", methods=["POST"])
 def add_author():
     """Add Author path"""
@@ -48,13 +51,6 @@ def delete_author():
 @app.route("/dashboard/edit_author", methods=["POST"])
 def edit_author():
     """Edit author"""
-    pass
-
-
-@app.route("/dashboard/author/<int:id>", methods=["GET", "POST"])
-def author():
-    """Shows informations about the selected author, a pic and their books,
-    which you can edit, add, delete etc."""
     pass
 
 
@@ -93,4 +89,5 @@ def delete_selected_book(author_id, book_id):
     pass
 
 
-@app.run
+if __name__ == "__main__":
+    app.run(debug=True)

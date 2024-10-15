@@ -1,9 +1,14 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
+import psycopg2-binary
+from  dotenv import load_dotenv
 
+load_dotenv()
 
 app = Flask(__name__)
+url = os.getenv("DATABASE_URL")
+
 
 # absolute path for the database
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -13,7 +18,9 @@ data_folder = os.path.join(base_dir, "data")
 
 if not os.path.exists("data"):
     os.makedirs("data")  # create folder, if not there
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(data_folder, 'data.sql')}"
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    f"sqlite:///{os.path.join(data_folder, 'data.db')}"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy()
@@ -81,7 +88,14 @@ class Publisher(db.Model):
 with app.app_context():
     db.create_all()  # creates all tables from ORM classes
 
-    # saves the SQL-Schema in one file
-    with open("data/data.sql", "w") as file:
+    # Save the schema to a file
+    schema_file_path = os.path.join(data_folder, "data.db")
+
+    with open(schema_file_path, "w") as file:
         for table in db.metadata.sorted_tables:
-            file.write(str(table) + "\n")
+            file.write(f"Table: {table.name}\n")
+            for column in table.columns:
+                file.write(f"  Column: {column.name}, Type: {column.type}\n")
+            file.write("\n")
+
+    print(f"Schema saved to {schema_file_path}")
