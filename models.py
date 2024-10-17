@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
@@ -9,8 +10,6 @@ app = Flask(__name__)
 
 # PostgreSQL config.
 database_url = os.getenv("DATABASE_URL")
-if database_url and database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -19,9 +18,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
-class User(db.Model):
+class Users(db.Model, UserMixin):
     __tablename__ = "Users"
-    user_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     admin = db.Column(db.Boolean, default=False)
@@ -30,8 +29,11 @@ class User(db.Model):
 
     authors = db.relationship("Author", backref="user", lazy=True)
     books = db.relationship("Book", backref="user", lazy=True)
-    publication_details = db.relationship("PublicationDetails", backref="user", lazy=True)
+    publication_details = db.relationship(
+        "PublicationDetails", backref="user", lazy=True
+    )
     publishers = db.relationship("Publisher", backref="user", lazy=True)
+
 
 class Author(db.Model):
     __tablename__ = "Author"
@@ -40,6 +42,7 @@ class Author(db.Model):
     author_image = db.Column(db.Text)
     birth_date = db.Column(db.Date)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
+
 
 class Book(db.Model):
     __tablename__ = "Book"
@@ -50,7 +53,10 @@ class Book(db.Model):
     chapters = db.Column(db.Integer)
     pages = db.Column(db.Integer)
 
-    publication_details = db.relationship("PublicationDetails", backref="book", lazy=True)
+    publication_details = db.relationship(
+        "PublicationDetails", backref="book", lazy=True
+    )
+
 
 class PublicationDetails(db.Model):
     __tablename__ = "Publication_Details"
@@ -63,11 +69,13 @@ class PublicationDetails(db.Model):
     link = db.Column(db.Text)
     language = db.Column(db.String)
 
+
 class Publisher(db.Model):
     __tablename__ = "Publisher"
     publisher_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
     publisher_name = db.Column(db.String)
+
 
 # create database
 with app.app_context():

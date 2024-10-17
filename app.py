@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, redirect, url_for, flash, ses
 app = Flask(__name__)
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["GET", "POST"])
 def login():
     """Shows Login Page with name and password and a function where you can
     make forgot password"""
@@ -22,10 +22,12 @@ def forgot_password():
     pass
 
 
-@app.route("/dashboard", methods=["GET", "POST"])
+@app.route('/dashboard')
 def dashboard():
-    """Shows the different Authors who are in the Publication Company"""
-    pass
+    if not current_user.is_authenticated or not current_user.admin:
+        return redirect(url_for('login'))
+    return render_template('admin_dashboard.html')
+
 
 
 @app.route("/dashboard/author/<int:id>", methods=["GET", "POST"])
