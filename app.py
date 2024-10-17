@@ -3,6 +3,11 @@ from flask import Flask, request, render_template, redirect, url_for, flash, ses
 app = Flask(__name__)
 
 
+db.init_app(app)
+migrate.init_app(app, db)
+jwt.init_app(app)
+
+
 @app.route("/", methods=["GET", "POST"])
 def login():
     """Shows Login Page with name and password and a function where you can
