@@ -1,11 +1,9 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, session
+from models import Users, Publisher, Book, Author, PublicationDetails
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
-
-
-db.init_app(app)
-migrate.init_app(app, db)
-jwt.init_app(app)
+jwt = JWTManager(app)
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -17,22 +15,29 @@ def login():
 
 @app.route("/register", methods=["POST"])
 def register():
-    """Registration form for User"""
-    pass
+    first_user = Users(
+        first_name="publisher",
+        last_name="company",
+        admin=True,
+        email="publisher1@bookapp.com",
+        password="publisher123",
+    )
+    return"Success!"
+    # Insert user into the database
+    # try:
+    #     db.session.add(first_user)
+    #     db.session.commit()
+    #     print("User successfully created.")
+    # except Exception as e:
+    #     db.session.rollback()
+    #     print(f"Bug during creating User: {e}")
 
 
-@app.route("/forget_password", methods=["POST"])
-def forgot_password():
-    """Function to reset password when User forgot"""
-    pass
-
-
-@app.route('/dashboard')
+@app.route("/dashboard")
 def dashboard():
     if not current_user.is_authenticated or not current_user.admin:
-        return redirect(url_for('login'))
-    return render_template('admin_dashboard.html')
-
+        return redirect(url_for("login"))
+    return render_template("admin_dashboard.html")
 
 
 @app.route("/dashboard/author/<int:id>", methods=["GET", "POST"])

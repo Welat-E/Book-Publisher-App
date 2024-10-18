@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_login import UserMixin
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
+from passlib.context import CryptContext
 
 load_dotenv()
 
@@ -13,6 +15,12 @@ database_url = os.getenv("DATABASE_URL")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+JWT_TOKEN_LOCATION = ["headers"]
+JWT_IDENTITY_CLAIM = "user_id"  # default == sub
+
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+
 
 # starting database
 db = SQLAlchemy(app)
@@ -25,7 +33,7 @@ class Users(db.Model, UserMixin):
     last_name = db.Column(db.String, nullable=False)
     admin = db.Column(db.Boolean, default=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False)
+    password = db.Column("password", db.String(255), nullable=False)
 
     authors = db.relationship("Author", backref="user", lazy=True)
     books = db.relationship("Book", backref="user", lazy=True)
