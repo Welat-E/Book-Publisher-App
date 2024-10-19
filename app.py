@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, session
-from models import Users
+from models import Users, db
 from flask_jwt_extended import JWTManager
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -35,33 +35,43 @@ def login():
 
 # No html for now, use Postman for checking everything.
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         try:
-            #the clear pw will be hashed
+            # the clear pw will be hashed
             hashed_password = generate_password_hash(request.form.get("password"))
-            
+
             # creating user
             create_user = Users(
                 first_name=request.form.get("first_name"),
                 last_name=request.form.get("last_name"),
                 admin=False,
                 email=request.form.get("email"),
-                password=hashed_password,  #the hash pw will be saved here
+                password=hashed_password,  # the hash pw will be saved here
             )
-            
-            #add user in database
+
+            # add user in database
             db.session.add(create_user)
-            db.session.commit()            
+            db.session.commit()
             return "Successfully registered!"
-        
+
         except Exception as e:
             db.session.rollback()
             print(f"Bug during creating User: {e}")
             return "An error occurred during registration"
-    
+
     return "Please fill the registration form."
+
+
+@app.route("/get_users", methods=["GET"])
+def get_users():
+    # calls all users from database
+    users = Users.query.all()
+
+    # gives the user data to html template
+    return render_template("users.html", users=users)
 
 
 @app.route("/dashboard")
