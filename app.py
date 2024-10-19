@@ -1,36 +1,67 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, session
-from models import Users, Publisher, Book, Author, PublicationDetails
+from models import Users
 from flask_jwt_extended import JWTManager
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 
 
+# Login Route
 @app.route("/", methods=["GET", "POST"])
 def login():
-    """Shows Login Page with name and password and a function where you can
-    make forgot password"""
-    return "Hello, world!"
+    """Shows Login Page with email and password"""
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        try:
+            user = Users.query.filter_by(email=email).first()
+
+            if user and check_password_hash(user.password, password):
+                print("User found:", user)
+                return redirect(url_for("dashboard"))
+            else:
+                print("Invalid email or password")
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Bug during searching for User: {e}")
+            return "An error occurred"
+
+    return "Please provide login credentials"
 
 
-@app.route("/register", methods=["POST"])
+# No html for now, use Postman for checking everything.
+
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    first_user = Users(
-        first_name="publisher",
-        last_name="company",
-        admin=True,
-        email="publisher1@bookapp.com",
-        password="publisher123",
-    )
-    return"Success!"
-    # Insert user into the database
-    # try:
-    #     db.session.add(first_user)
-    #     db.session.commit()
-    #     print("User successfully created.")
-    # except Exception as e:
-    #     db.session.rollback()
-    #     print(f"Bug during creating User: {e}")
+    if request.method == "POST":
+        try:
+            #the clear pw will be hashed
+            hashed_password = generate_password_hash(request.form.get("password"))
+            
+            # creating user
+            create_user = Users(
+                first_name=request.form.get("first_name"),
+                last_name=request.form.get("last_name"),
+                admin=False,
+                email=request.form.get("email"),
+                password=hashed_password,  #the hash pw will be saved here
+            )
+            
+            #add user in database
+            db.session.add(create_user)
+            db.session.commit()            
+            return "Successfully registered!"
+        
+        except Exception as e:
+            db.session.rollback()
+            print(f"Bug during creating User: {e}")
+            return "An error occurred during registration"
+    
+    return "Please fill the registration form."
 
 
 @app.route("/dashboard")

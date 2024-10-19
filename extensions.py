@@ -9,8 +9,8 @@
 # pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 # jwt = JWTManager()
 
-# # TODO Implement singleton design pattern(do it at the end)
 
-
-
-
+"""
+get Users endpoint
+Put auth Only decorator on getUsers Endpoint, so it is accessible only with JWT (Only auth users can access it)
+"""
