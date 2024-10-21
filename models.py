@@ -33,7 +33,7 @@ class Users(db.Model, UserMixin):
     last_name = db.Column(db.String, nullable=False)
     admin = db.Column(db.Boolean, default=False)
     email = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column("password", db.String(255), nullable=False)
+    password = db.Column("password", db.String, nullable=False)
 
     authors = db.relationship("Author", backref="user", lazy=True)
     books = db.relationship("Book", backref="user", lazy=True)
@@ -88,5 +88,3 @@ class Publisher(db.Model):
 # create database
 with app.app_context():
     db.create_all()
-
-print("Database tables created.")

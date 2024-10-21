@@ -1,9 +1,8 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, session
 from models import Users, db, app
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 
-#app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 
@@ -11,26 +10,34 @@ jwt = JWTManager(app)
 # Login Route
 @app.route("/", methods=["GET", "POST"])
 def login():
-    """Shows Login Page with email and password"""
     if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-
+        email = request.get_json().get("email")
+        password = request.get_json().get("password")
+        print(email)
         try:
             user = Users.query.filter_by(email=email).first()
-
+            print(user)
             if user and check_password_hash(user.password, password):
-                print("User found:", user)
-                return redirect(url_for("dashboard"))
+                print("test")
+                #generate jwt token
+                access_token = create_access_token(identity=user.user_id)
+                
+                #transfer it into a string
+                access_token_str = str(access_token)
+                
+                #give token back as json
+                return {"access_token": access_token_str}, 200
             else:
                 print("Invalid email or password")
+                return {"msg": "Invalid details"}, 401
 
         except Exception as e:
             db.session.rollback()
             print(f"Bug during searching for User: {e}")
-            return "An error occurred"
+            return "An error occurred", 500
 
-    return "Please provide login credentials"
+    return "Please provide your login details."
+
 
 
 # No html for now, use Postman for checking everything.
@@ -66,8 +73,8 @@ def register():
 
 
 @app.route("/get_users", methods=["GET"])
+@jwt_required()
 def get_users():
-    print("Trying to fetch users...")  #debugging
     users = Users.query.all()
     return render_template("users.html", users=users)
 
