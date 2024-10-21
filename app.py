@@ -1,9 +1,9 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, session
-from models import Users, db
+from models import Users, db, app
 from flask_jwt_extended import JWTManager
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__)
+#app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 
@@ -67,10 +67,8 @@ def register():
 
 @app.route("/get_users", methods=["GET"])
 def get_users():
-    # calls all users from database
+    print("Trying to fetch users...")  #debugging
     users = Users.query.all()
-
-    # gives the user data to html template
     return render_template("users.html", users=users)
 
 
