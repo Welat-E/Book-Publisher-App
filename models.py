@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from dotenv import load_dotenv
 from passlib.context import CryptContext
+from datetime import timedelta
 
 load_dotenv()
 
@@ -15,9 +16,12 @@ database_url = os.getenv("DATABASE_URL")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)  # Access-Token expires after 30mins
+#app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1) #TODO Refresh-Token after 1 day # 
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 JWT_TOKEN_LOCATION = ["headers"]
 JWT_IDENTITY_CLAIM = "user_id"  # default == sub
+
 
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
@@ -85,6 +89,6 @@ class Publisher(db.Model):
     publisher_name = db.Column(db.String)
 
 
-# create database
-with app.app_context():
-    db.create_all()
+#  create database
+# with app.app_context():
+#     db.create_all()

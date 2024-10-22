@@ -1,6 +1,21 @@
-from flask import Flask, request, render_template, redirect, url_for, flash, session
+from flask import (
+    Flask,
+    request,
+    render_template,
+    redirect,
+    url_for,
+    flash,
+    session,
+    jsonify,
+)
 from models import Users, db, app
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from flask_jwt_extended import (
+    JWTManager,
+    jwt_required,
+    create_access_token,
+    create_refresh_token,
+    get_jwt_identity,
+)
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app.config["JWT_SECRET_KEY"] = "super-secret"
@@ -8,73 +23,64 @@ jwt = JWTManager(app)
 
 
 # Login Route
-@app.route("/", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.get_json().get("email")
-        password = request.get_json().get("password")
-        print(email)
-        try:
-            user = Users.query.filter_by(email=email).first()
-            print(user)
-            if user and check_password_hash(user.password, password):
-                print("test")
-                #generate jwt token
-                access_token = create_access_token(identity=user.user_id)
-                
-                #transfer it into a string
-                access_token_str = str(access_token)
-                
-                #give token back as json
-                return {"access_token": access_token_str}, 200
-            else:
-                print("Invalid email or password")
-                return {"msg": "Invalid details"}, 401
+        email = request.json.get("email")
+        password = request.json.get("password")
 
-        except Exception as e:
-            db.session.rollback()
-            print(f"Bug during searching for User: {e}")
-            return "An error occurred", 500
+    try:
+        user = Users.query.filter_by(email=email).first()
+
+        if user and check_password_hash(user.password, password):
+            # generate jwt token
+            access_token = create_access_token(identity=user.user_id)
+            #print(f"Access Token: {access_token}, Type: {type(access_token)}")
+            return jsonify(access_token=access_token.decode('utf-8'))
+        else:
+            return {"Invalid email or password"}, 401
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Bug during searching for User: {e}")
+        return "An error occurred", 500
 
     return "Please provide your login details."
 
 
-
-# No html for now, use Postman for checking everything.
-
-
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["POST"])
 def register():
-    if request.method == "POST":
-        try:
-            # the clear pw will be hashed
-            hashed_password = generate_password_hash(request.form.get("password"))
+    # print("TEST")
+    # print(request.form)
+    # print(request.get_json())
+    try:
+        # the clear pw will be hashed
+        hashed_password = generate_password_hash(request.json.get("password"))
 
-            # creating user
-            create_user = Users(
-                first_name=request.form.get("first_name"),
-                last_name=request.form.get("last_name"),
-                admin=False,
-                email=request.form.get("email"),
-                password=hashed_password,  # the hash pw will be saved here
-            )
+        # creating user
+        create_user = Users(
+            first_name=request.json.get("first_name"),
+            last_name=request.json.get("last_name"),
+            email=request.json.get("email"),
+            password=hashed_password,)  # the hash pw will be saved here
 
-            # add user in database
-            db.session.add(create_user)
-            db.session.commit()
-            return "Successfully registered!"
+        db.session.add(create_user)
+        db.session.commit()
+        return jsonify({
+            "first_name": create_user.first_name,
+            "last_name": create_user.last_name,
+            "email": create_user.email}), 200
 
-        except Exception as e:
-            db.session.rollback()
-            print(f"Bug during creating User: {e}")
-            return "An error occurred during registration"
-
-    return "Please fill the registration form."
+    except Exception as e:
+        db.session.rollback()
+        print(f"Bug during creating User: {e}")
+    return "An error occurred during registration"
 
 
 @app.route("/get_users", methods=["GET"])
 @jwt_required()
 def get_users():
+    print("TEST")
     users = Users.query.all()
     return render_template("users.html", users=users)
 
