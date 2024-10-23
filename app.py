@@ -35,8 +35,7 @@ def login():
         if user and check_password_hash(user.password, password):
             # generate jwt token
             access_token = create_access_token(identity=user.user_id)
-            #print(f"Access Token: {access_token}, Type: {type(access_token)}")
-            return jsonify(access_token=access_token.decode('utf-8'))
+            return jsonify(access_token=access_token.decode("utf-8"))
         else:
             return {"Invalid email or password"}, 401
 
@@ -50,9 +49,6 @@ def login():
 
 @app.route("/register", methods=["POST"])
 def register():
-    # print("TEST")
-    # print(request.form)
-    # print(request.get_json())
     try:
         # the clear pw will be hashed
         hashed_password = generate_password_hash(request.json.get("password"))
@@ -62,14 +58,22 @@ def register():
             first_name=request.json.get("first_name"),
             last_name=request.json.get("last_name"),
             email=request.json.get("email"),
-            password=hashed_password,)  # the hash pw will be saved here
+            password=hashed_password,
+        )  # the hash pw will be saved here
 
         db.session.add(create_user)
         db.session.commit()
-        return jsonify({
-            "first_name": create_user.first_name,
-            "last_name": create_user.last_name,
-            "email": create_user.email}), 200
+
+        return (
+            jsonify(
+                {
+                    "first_name": create_user.first_name,
+                    "last_name": create_user.last_name,
+                    "email": create_user.email,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         db.session.rollback()
@@ -80,12 +84,23 @@ def register():
 @app.route("/get_users", methods=["GET"])
 @jwt_required()
 def get_users():
-    print("TEST")
-    users = Users.query.all()
-    return render_template("users.html", users=users)
+    # Fetch all users and convert to list of dicts in one step
+    users_list = [
+        {
+            "user_id": user.user_id,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "admin": user.admin,
+        }
+        for user in Users.query.all()
+    ]
+
+    return jsonify({"users": users_list}), 200
 
 
 @app.route("/dashboard")
+@jwt_required()
 def dashboard():
     if not current_user.is_authenticated or not current_user.admin:
         return redirect(url_for("login"))
