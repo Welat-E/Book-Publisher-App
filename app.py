@@ -379,7 +379,7 @@ def get_publication_details():
 
 
 
-@app.route("/dashboard/author/<int:author_id>/books/<int:book_id>/delete", methods=["POST"])
+@app.route("/Book", methods=["POST"])
 def delete_selected_book(author_id, book_id):
     """Delete a selected book"""
     pass
