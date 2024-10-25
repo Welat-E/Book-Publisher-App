@@ -242,7 +242,7 @@ def edit_author():
         return jsonify({"message": "An error occurred while updating the author"}), 500
 
 
-@app.route("/Book", methods=["GET"])
+@app.route("/book", methods=["GET"])
 def get_book_infos():
     """Fetches information about all books."""
     try:
@@ -264,7 +264,7 @@ def get_book_infos():
         return jsonify({"message": "An error occurred while retrieving books"}), 500
 
 
-@app.route("/Book", methods=["POST"])
+@app.route("/book", methods=["POST"])
 def add_book():
     """Add a new book for a selected author."""
     try:
@@ -308,7 +308,7 @@ def add_book():
         return jsonify({"message": "An error occurred while adding the book"}), 500
 
 
-@app.route("/Book/<int:book_id>", methods=["PUT"])
+@app.route("/book/<int:book_id>", methods=["PUT"])
 def edit_book(book_id):
     """Edit a selected book based on book_id."""
     try:
@@ -341,7 +341,7 @@ def edit_book(book_id):
 
 
 
-@app.route("/PublicationDetails", methods=["GET"])
+@app.route("/publication_details", methods=["GET"])
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
     try:
@@ -379,7 +379,7 @@ def get_publication_details():
 
 
 
-@app.route("/Book", methods=["POST"])
+@app.route("/book", methods=["POST"])
 def delete_selected_book(author_id, book_id):
     """Delete a selected book"""
     pass
