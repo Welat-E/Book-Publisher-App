@@ -70,7 +70,7 @@ class Book(db.Model):
     )
 
 
-class PublicationDetails(db.Model):
+class Publication_Details(db.Model):
     __tablename__ = "Publication_Details"
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey("Book.book_id"))
