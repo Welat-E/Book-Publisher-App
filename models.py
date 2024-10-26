@@ -16,8 +16,10 @@ database_url = os.getenv("DATABASE_URL")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)  # Access-Token expires after 30mins
-#app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1) #TODO Refresh-Token after 1 day # 
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+    minutes=240
+)  # Access-Token expires after 30mins
+# app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1) #TODO Refresh-Token after 1 day #
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 JWT_TOKEN_LOCATION = ["headers"]
 JWT_IDENTITY_CLAIM = "user_id"  # default == sub
@@ -42,7 +44,7 @@ class Users(db.Model, UserMixin):
     authors = db.relationship("Author", backref="user", lazy=True)
     books = db.relationship("Book", backref="user", lazy=True)
     publication_details = db.relationship(
-        "PublicationDetails", backref="user", lazy=True
+        "Publication_Details", backref="user", lazy=True
     )
     publishers = db.relationship("Publisher", backref="user", lazy=True)
 
@@ -66,7 +68,7 @@ class Book(db.Model):
     pages = db.Column(db.Integer)
 
     publication_details = db.relationship(
-        "PublicationDetails", backref="book", lazy=True
+        "Publication_Details", backref="book", lazy=True
     )
 
 

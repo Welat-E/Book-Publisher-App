@@ -17,6 +17,9 @@ from flask_jwt_extended import (
     get_jwt_identity,
 )
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
+import urllib3
 
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
@@ -97,6 +100,27 @@ def get_users():
     ]
 
     return jsonify({"users": users_list}), 200
+
+
+@app.route("/users/<int:user_id>", methods=["DELETE"])
+@jwt_required()
+def delete_user(user_id):
+    """Deletes a user from the database."""
+    try:
+        user = Users.query.get(user_id)
+
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        db.session.delete(user)
+        db.session.commit()
+        print("Test")
+        return jsonify({"message": "User successfully deleted"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting user: {e}")
+    return jsonify({"message": "An error occurred while deleting the user"}), 500
 
 
 @app.route("/author", methods=["GET"])
@@ -181,26 +205,6 @@ def show_author():
             jsonify({"message": "An error occurred while retrieving the author"}),
             500,
         )
-
-
-@app.route("/author", methods=["DELETE"])
-@jwt_required()
-def delete_author():
-    """Delete an author by ID."""
-    try:
-        author_id = request.json.get("author_id")
-        author = Author.query.get(author_id)
-        if author:
-            db.session.delete(author)
-            db.session.commit()
-            return jsonify({"message": "Author successfully deleted"}), 200
-        else:
-            return jsonify({"message": "Author not found"}), 404
-
-    except Exception as e:
-        db.session.rollback()
-        print(f"Error deleting author: {e}")
-        return jsonify({"message": "An error occurred while deleting the author"}), 500
 
 
 @app.route("/author", methods=["PUT"])
@@ -312,9 +316,9 @@ def add_book():
 def edit_book(book_id):
     """Edit a selected book based on book_id."""
     try:
-        #recall Book by book_id
+        # recall Book by book_id
         book = Book.query.get(book_id)
-        
+
         if book:
             book.release_date = request.json.get("release_date", book.release_date)
             book.cover_image = request.json.get("cover_image", book.cover_image)
@@ -330,7 +334,12 @@ def edit_book(book_id):
                 "chapters": book.chapters,
                 "pages": book.pages,
             }
-            return jsonify({"message": "Book successfully updated", "book": updated_book_data}), 200
+            return (
+                jsonify(
+                    {"message": "Book successfully updated", "book": updated_book_data}
+                ),
+                200,
+            )
         else:
             return jsonify({"message": "Book not found"}), 404
 
@@ -340,17 +349,22 @@ def edit_book(book_id):
         return jsonify({"message": "An error occurred while updating the book"}), 500
 
 
-
 @app.route("/publication_details", methods=["GET"])
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
+    print(request.query_string)
     try:
         author_id = request.args.get("author_id")
         book_id = request.args.get("book_id")
 
+        url = "http://127.0.0.1:5000/publication_details?user_id=1&book_id=2"
+        parsed_url = urlparse(url)
+        user_id = parse_qs(parsed_url.query)["user_id"][0]
+        book_id = parse_qs(parsed_url.query)["book_id"][0]
+
         # search for the publication details based on author_id and book_id
-        publication_details = PublicationDetails.query.filter_by(
-            user_id=author_id, book_id=book_id
+        publication_details = Publication_Details.query.filter_by(
+            user_id=user_id, book_id=book_id
         ).first()
 
         if publication_details:
@@ -378,11 +392,24 @@ def get_publication_details():
         )
 
 
-
-@app.route("/book", methods=["POST"])
-def delete_selected_book(author_id, book_id):
+@app.route("/book", methods=["DELETE"])
+def delete_book():
     """Delete a selected book"""
-    pass
+    try:
+        book_id = request.json.get("book_id")
+        book = Book.query.get(book_id)
+
+        if book:
+            db.session.delete(book)
+            db.session.commit()
+            return jsonify({"message:" "Book successfully deleted"}), 200
+        else:
+            return jsonify({"message": "Book not found"}), 404
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting author: {e}")
+        return jsonify({"message": "An error occurred while deleting the book"}), 500
 
 
 if __name__ == "__main__":
