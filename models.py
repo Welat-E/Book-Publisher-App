@@ -12,11 +12,13 @@ load_dotenv()
 app = Flask(__name__)
 
 # PostgreSQL config.
-#database_url = os.getenv("DATABASE_URL")
-RENDER_URL = 'postgresql://publisher_book_app12_user:0K4xTo4MFfHLa7ddCMz9RIf4B6SdGno7@dpg-csh6sr1u0jms739snrgg-a.frankfurt-postgres.render.com/publisher_book_app12'
-app.config["SQLALCHEMY_DATABASE_URI"] = RENDER_URL   #database_url (before)
+database_url = os.getenv("DATABASE_URL")
+# RENDER_URL = 'postgresql://publisher_book_app12_user:0K4xTo4MFfHLa7ddCMz9RIf4B6SdGno7@dpg-csh6sr1u0jms739snrgg-a.frankfurt-postgres.render.com/publisher_book_app12'
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url  # database_url (before)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)  # Access-Token expires after 240mins
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+    minutes=240
+)  # Access-Token expires after 240mins
 # app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1) #TODO Refresh-Token after 1 day #
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 JWT_TOKEN_LOCATION = ["headers"]
@@ -30,6 +32,7 @@ db = SQLAlchemy(app)
 
 
 class Users(db.Model, UserMixin):
+
     __tablename__ = "Users"
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String, nullable=False)
@@ -44,6 +47,10 @@ class Users(db.Model, UserMixin):
         "Publication_Details", backref="user", lazy=True
     )
     publishers = db.relationship("Publisher", backref="user", lazy=True)
+
+    def __init__(self, first_name, last_name):
+        self.first_name = first_name
+        self.last_name = last_name
 
 
 class Author(db.Model):
@@ -88,6 +95,6 @@ class Publisher(db.Model):
     publisher_name = db.Column(db.String)
 
 
- #  create database
+#  create database
 # with app.app_context():
 #     db.create_all()
