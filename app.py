@@ -8,6 +8,7 @@ from flask import (
     session,
     jsonify,
 )
+from flask_migrate import Migrate
 from models import Users, db, app, Author, Book, Publisher, Publication_Details
 from flask_jwt_extended import (
     JWTManager,
@@ -23,6 +24,7 @@ import urllib3
 
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
+migrate = Migrate(app, db)
 
 
 # Login Route
