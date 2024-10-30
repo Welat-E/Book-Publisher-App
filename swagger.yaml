@@ -1,0 +1,166 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Book Publisher API"
+  description: "API documentation for managing users, authors, books, and publication details."
+
+host: "localhost:5000"
+basePath: "/"
+schemes:
+  - "http"
+
+paths:
+  /login:
+    post:
+      summary: "User login"
+      description: "Logs in a user and returns a JWT token."
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              email:
+                type: "string"
+              password:
+                type: "string"
+      responses:
+        200:
+          description: "Successful login"
+        401:
+          description: "Invalid email or password"
+
+  /register:
+    post:
+      summary: "Register a new user"
+      description: "Creates a new user with hashed password."
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              first_name:
+                type: "string"
+              last_name:
+                type: "string"
+              email:
+                type: "string"
+              password:
+                type: "string"
+      responses:
+        200:
+          description: "User successfully registered"
+        500:
+          description: "Error occurred during registration"
+
+  /users:
+    get:
+      summary: "Get all users"
+      description: "Fetches all users. Requires JWT authentication."
+      security:
+        - JWT: []
+      responses:
+        200:
+          description: "List of users"
+
+  /users/{user_id}:
+    delete:
+      summary: "Delete user"
+      description: "Deletes a user based on user_id. Requires JWT authentication."
+      parameters:
+        - in: "path"
+          name: "user_id"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "User deleted"
+        404:
+          description: "User not found"
+
+  /author:
+    get:
+      summary: "Get authors"
+      description: "Fetches all authors. Requires JWT authentication."
+      security:
+        - JWT: []
+      responses:
+        200:
+          description: "List of authors"
+    post:
+      summary: "Create new author"
+      description: "Adds a new author to the database. Requires JWT authentication."
+      security:
+        - JWT: []
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+              author_image:
+                type: "string"
+              birth_date:
+                type: "string"
+      responses:
+        200:
+          description: "Author successfully created"
+
+  /author/{id}:
+    get:
+      summary: "Get author by ID"
+      description: "Fetches details of a single author based on ID."
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Author details"
+        404:
+          description: "Author not found"
+
+  /book:
+    get:
+      summary: "Get all books"
+      description: "Fetches information about all books."
+      responses:
+        200:
+          description: "List of books"
+    post:
+      summary: "Add a new book"
+      description: "Creates a new book entry."
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              user_id:
+                type: "integer"
+              release_date:
+                type: "string"
+              cover_image:
+                type: "string"
+              chapters:
+                type: "integer"
+              pages:
+                type: "integer"
+      responses:
+        201:
+          description: "Book successfully added"
+
+securityDefinitions:
+  JWT:
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    description: "JWT Authorization header using the Bearer scheme. Example: 'Authorization: Bearer {token}'"

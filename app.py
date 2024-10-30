@@ -21,10 +21,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 import urllib3
+from flasgger import Swagger
 
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
+swagger = Swagger(app, template_file="swagger.yaml")
 
 
 # Login Route
