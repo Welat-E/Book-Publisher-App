@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "Book Publisher API"
-  description: "API documentation for managing users, authors, books, and publication details."
+  title: "Book Publisher APP"
+  description: "API for managing users, authors, books, and publication details."
 
 host: "localhost:5000"
 basePath: "/"
@@ -12,6 +12,8 @@ schemes:
 paths:
   /login:
     post:
+      tags:
+        - "auth"
       summary: "User login"
       description: "Logs in a user and returns a JWT token."
       parameters:
@@ -33,6 +35,8 @@ paths:
 
   /register:
     post:
+      tags:
+        - "auth"
       summary: "Register a new user"
       description: "Creates a new user with hashed password."
       parameters:
@@ -58,6 +62,8 @@ paths:
 
   /users:
     get:
+      tags:
+        - "user"
       summary: "Get all users"
       description: "Fetches all users. Requires JWT authentication."
       security:
@@ -68,6 +74,8 @@ paths:
 
   /users/{user_id}:
     delete:
+      tags:
+        - "user"
       summary: "Delete user"
       description: "Deletes a user based on user_id. Requires JWT authentication."
       parameters:
@@ -83,6 +91,8 @@ paths:
 
   /author:
     get:
+      tags:
+        - "author"
       summary: "Get authors"
       description: "Fetches all authors. Requires JWT authentication."
       security:
@@ -91,6 +101,8 @@ paths:
         200:
           description: "List of authors"
     post:
+      tags:
+        - "author"
       summary: "Create new author"
       description: "Adds a new author to the database. Requires JWT authentication."
       security:
@@ -114,6 +126,8 @@ paths:
 
   /author/{id}:
     get:
+      tags:
+        - "author"
       summary: "Get author by ID"
       description: "Fetches details of a single author based on ID."
       parameters:
@@ -129,12 +143,16 @@ paths:
 
   /book:
     get:
+      tags:
+        - "book"
       summary: "Get all books"
       description: "Fetches information about all books."
       responses:
         200:
           description: "List of books"
     post:
+      tags:
+        - "book"
       summary: "Add a new book"
       description: "Creates a new book entry."
       parameters:
@@ -157,6 +175,77 @@ paths:
       responses:
         201:
           description: "Book successfully added"
+    delete:
+      tags:
+        - "book"
+      summary: "Delete a book"
+      description: "Deletes a selected book based on book_id."
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              book_id:
+                type: "integer"
+      responses:
+        200:
+          description: "Book deleted successfully"
+        404:
+          description: "Book not found"
+
+  /book/{book_id}:
+    put:
+      tags:
+        - "book"
+      summary: "Edit book details"
+      description: "Edit a selected book based on book_id."
+      parameters:
+        - in: "path"
+          name: "book_id"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              release_date:
+                type: "string"
+              cover_image:
+                type: "string"
+              chapters:
+                type: "integer"
+              pages:
+                type: "integer"
+      responses:
+        200:
+          description: "Book updated successfully"
+        404:
+          description: "Book not found"
+
+  /publication_details:
+    get:
+      tags:
+        - "publication details"
+      summary: "Get publication details"
+      description: "Fetches detailed information about a selected book related to sales, price, etc."
+      parameters:
+        - in: "query"
+          name: "author_id"
+          required: false
+          type: "integer"
+        - in: "query"
+          name: "book_id"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Publication details"
+        404:
+          description: "Publication details not found"
 
 securityDefinitions:
   JWT:

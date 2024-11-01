@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 # PostgreSQL config.
 database_url = os.getenv("DATABASE_URL")
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url  # database_url (before)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url  # RENDER_URL (before)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)  # Access-Token expires after 240mins
 # app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1) #TODO Refresh-Token after 1 day #
