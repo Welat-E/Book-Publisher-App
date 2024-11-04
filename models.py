@@ -12,8 +12,9 @@ load_dotenv()
 app = Flask(__name__)
 
 # PostgreSQL config.
-database_url = os.getenv("DATABASE_URL")
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url  # RENDER_URL (before)
+#database_url = os.getenv("DATABASE_URL")
+render_url = os.getenv("RENDER_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = render_url  # database_url (before)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)  # Access-Token expires after 240mins
 # app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1) #TODO Refresh-Token after 1 day #
@@ -45,9 +46,9 @@ class Users(db.Model, UserMixin):
     )
     publishers = db.relationship("Publisher", backref="user", lazy=True)
 
-    def __init__(self, first_name, last_name):
-        self.first_name = first_name
-        self.last_name = last_name
+    # def __init__(self, first_name, last_name):
+    #     self.first_name = first_name
+    #     self.last_name = last_name
 
 
 class Author(db.Model):

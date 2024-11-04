@@ -8,7 +8,6 @@ from flask import (
     session,
     jsonify,
 )
-from flask_migrate import Migrate
 from models import Users, db, app, Author, Book, Publisher, Publication_Details
 from flask_jwt_extended import (
     JWTManager,
@@ -25,7 +24,6 @@ from flasgger import Swagger
 
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
-migrate = Migrate(app, db)
 swagger = Swagger(app, template_file="swagger.yaml")
 
 
