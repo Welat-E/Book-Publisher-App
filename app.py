@@ -55,30 +55,31 @@ def login():
 @app.route("/register", methods=["POST"])
 def register():
     try:
-        # the clear pw will be hashed
-        hashed_password = generate_password_hash(request.json.get("password"))
+        # the clear password will be hashed
+        hashed_password = generate_password_hash(
+            request.json.get("password")
+        )
 
         # creating user
         create_user = Users(
             first_name=request.json.get("first_name"),
             last_name=request.json.get("last_name"),
             email=request.json.get("email"),
-            password=hashed_password,
-        )  # the hash pw will be saved here
+            password=hashed_password,  # the hashed password will be saved here
+        )
 
         db.session.add(create_user)
         db.session.commit()
 
         return (
-            jsonify(
-                {
-                    "first_name": create_user.first_name,
-                    "last_name": create_user.last_name,
-                    "email": create_user.email,
-                }
-            ),
+            jsonify({
+                "first_name": create_user.first_name,
+                "last_name": create_user.last_name,
+                "email": create_user.email,
+            }),
             200,
         )
+
 
     except Exception as e:
         db.session.rollback()
@@ -249,6 +250,7 @@ def edit_author():
 
 
 @app.route("/book", methods=["GET"])
+@jwt_required()
 def get_book_infos():
     """Fetches information about all books."""
     try:
@@ -271,6 +273,7 @@ def get_book_infos():
 
 
 @app.route("/book", methods=["POST"])
+@jwt_required()
 def add_book():
     """Add a new book for a selected author."""
     try:
@@ -352,6 +355,7 @@ def edit_book(book_id):
 
 
 @app.route("/publication_details", methods=["GET"])
+@jwt_required()
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
     print(request.query_string)
@@ -395,23 +399,28 @@ def get_publication_details():
 
 
 @app.route("/book", methods=["DELETE"])
+@jwt_required()
 def delete_book():
     """Delete a selected book"""
     try:
-        book_id = request.json.get("book_id")
-        book = Book.query.get(book_id)
+        book_id = request.json.get("book", {}).get("book_id")
+        if not book_id:
+            return jsonify({"message": "Book ID is required"}), 400
+
+        book = db.session.get(Book, book_id)
 
         if book:
             db.session.delete(book)
             db.session.commit()
-            return jsonify({"message:" "Book successfully deleted"}), 200
+            return jsonify({"message": "Book successfully deleted"}), 200
         else:
             return jsonify({"message": "Book not found"}), 404
 
     except Exception as e:
         db.session.rollback()
-        print(f"Error deleting author: {e}")
+        print(f"Error deleting book: {e}")
         return jsonify({"message": "An error occurred while deleting the book"}), 500
+
 
 
 if __name__ == "__main__":

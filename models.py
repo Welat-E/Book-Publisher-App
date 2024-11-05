@@ -6,17 +6,21 @@ import os
 from dotenv import load_dotenv
 from passlib.context import CryptContext
 from datetime import timedelta
+from flask_cors import CORS
 
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5000"}})
 
 # PostgreSQL config.
-#database_url = os.getenv("DATABASE_URL")
+# database_url = os.getenv("DATABASE_URL")
 render_url = os.getenv("RENDER_URL")
 app.config["SQLALCHEMY_DATABASE_URI"] = render_url  # database_url (before)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=240)  # Access-Token expires after 240mins
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+    minutes=240
+)  # Access-Token expires after 240mins
 # app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1) #TODO Refresh-Token after 1 day #
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 JWT_TOKEN_LOCATION = ["headers"]
