@@ -27,6 +27,15 @@ jwt = JWTManager(app)
 swagger = Swagger(app, template_file="swagger.yaml")
 
 
+@app.route("/")
+def index():
+    return redirect(url_for("get_swagger_docs"))
+
+@app.route("/apidocs", methods=["GET"])
+def get_swagger_docs():
+    return send_file("swagger.yaml"), 200
+
+
 # Login Route
 @app.route("/login", methods=["GET", "POST"])
 def login():
