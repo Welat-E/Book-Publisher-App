@@ -4,10 +4,10 @@ info:
   title: "Book Publisher APP"
   description: "API for managing users, authors, books, and publication details."
 
-host: "localhost:5000"
+host: "book-publisher-app.onrender.com"
 basePath: "/"
 schemes:
-  - "http"
+  - "https"
 
 paths:
   /login:
