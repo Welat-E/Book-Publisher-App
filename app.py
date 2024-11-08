@@ -434,3 +434,6 @@ def delete_book():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+print("Loaded DATABASE URI:", os.getenv("RENDER_URL"))
