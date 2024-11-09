@@ -1,8 +1,8 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "Book Publisher APP"
-  description: "API for managing users, authors, books, and publication details."
+  title: "Publisher Book App"
+  description: "A web service designed for publishers to manage authors and their books. Each book entry includes details such as pages, chapters, release date, and more. Additionally, publishers can track publication-specific information, including price, country, units sold, language, and other relevant data."
 
 host: "localhost:5000"
 basePath: "/"
