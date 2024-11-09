@@ -7,7 +7,7 @@ info:
 host: "localhost:5000"
 basePath: "/"
 schemes:
-  - "https"
+  - "http"
 
 paths:
   /login:
