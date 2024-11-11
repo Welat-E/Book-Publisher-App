@@ -57,9 +57,7 @@ def login():
 def register():
     try:
         # the clear password will be hashed
-        hashed_password = generate_password_hash(
-            request.json.get("password")
-        )
+        hashed_password = generate_password_hash(request.json.get("password"))
 
         # creating user
         create_user = Users(
@@ -73,14 +71,15 @@ def register():
         db.session.commit()
 
         return (
-            jsonify({
-                "first_name": create_user.first_name,
-                "last_name": create_user.last_name,
-                "email": create_user.email,
-            }),
+            jsonify(
+                {
+                    "first_name": create_user.first_name,
+                    "last_name": create_user.last_name,
+                    "email": create_user.email,
+                }
+            ),
             200,
         )
-
 
     except Exception as e:
         db.session.rollback()
@@ -421,7 +420,6 @@ def delete_book():
         db.session.rollback()
         print(f"Error deleting book: {e}")
         return jsonify({"message": "An error occurred while deleting the book"}), 500
-
 
 
 if __name__ == "__main__":
