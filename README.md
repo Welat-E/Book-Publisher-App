@@ -1,4 +1,4 @@
-<a id="#top"></a>
+<a id="top"></a>
 
 <!-- PROJECT SHIELDS -->
 [![Contributors][contributors-shield]][contributors-url]
