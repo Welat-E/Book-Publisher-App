@@ -11,7 +11,7 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://book-publisher-app.onrender.com"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # PostgreSQL config.
 # database_url = os.getenv("DATABASE_URL")
