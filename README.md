@@ -120,7 +120,10 @@ This section lists the major frameworks and libraries used in the project.
 
 To explore the API documentation, navigate to `/apidocs` after starting the Flask server.
 
-
+<div align="center">
+    <img src="images/postman.jpg" alt="Logo" width="250" height="350">
+  </a>
+</div>
 ## Roadmap
 
 * [ ] Add more comprehensive API tests
