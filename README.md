@@ -121,7 +121,7 @@ This section lists the major frameworks and libraries used in the project.
 To explore the API documentation, navigate to `/apidocs` after starting the Flask server.
 
 <div align="center">
-    <img src="images/postman1.jpg" width="620">
+    <img src="images/postman1.jpg" width="680">
   </a>
 </div>
 
