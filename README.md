@@ -9,6 +9,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
+  <img src="images/picture.jpg" alt="Publisher Book App Banner" width="520">
+
   <h3 align="center">Publisher Book App</h3>
   <p align="center">
     An application to manage and view authors' books and publication details.
@@ -44,10 +46,29 @@
 A web service designed for publishers to manage authors and their books. Each book entry includes details such as pages, chapters, release date, and more. Additionally, publishers can track publication-specific information, including price.
 
 ### Built With
-* Flask
-* SQLAlchemy
-* Swagger for API Documentation
-* PostgreSQL
+
+This section lists the major frameworks and libraries used in the project.
+
+* [![Flask][Flask-img]][Flask-url]
+* [![SQLAlchemy][SQLAlchemy-img]][SQLAlchemy-url]
+* [![Swagger][Swagger-img]][Swagger-url]
+* [![PostgreSQL][PostgreSQL-img]][PostgreSQL-url]
+
+<!-- ICON LINKS -->
+
+[Flask-img]: https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white
+[Flask-url]: https://flask.palletsprojects.com/
+
+[SQLAlchemy-img]: https://img.shields.io/badge/SQLAlchemy-323232?style=for-the-badge&logo=databricks&logoColor=white
+[SQLAlchemy-url]: https://www.sqlalchemy.org/
+
+[Swagger-img]: https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black
+[Swagger-url]: https://swagger.io/
+
+[PostgreSQL-img]: https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white
+[PostgreSQL-url]: https://www.postgresql.org/
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -83,10 +104,13 @@ A web service designed for publishers to manage authors and their books. Each bo
     flask run
     ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 To explore the API documentation, navigate to `/apidocs` after starting the Flask server.
+
 
 ## Roadmap
 
@@ -102,6 +126,8 @@ To explore the API documentation, navigate to `/apidocs` after starting the Flas
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
@@ -112,6 +138,7 @@ Welat - welaterenug@gmail.com
 
 Project Link: [https://book-publisher-app.onrender.com/apidocs/](https://book-publisher-app.onrender.com/apidocs/)
 
+<!-- ICON LINKS -->
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/Welat-E/Book-Publisher-App.svg?style=for-the-badge
 [contributors-url]: https://github.com/Welat-E/Book-Publisher-App/graphs/contributors
@@ -121,7 +148,7 @@ Project Link: [https://book-publisher-app.onrender.com/apidocs/](https://book-pu
 [stars-url]: https://github.com/Welat-E/Book-Publisher-App/stargazers
 [issues-shield]: https://img.shields.io/github/issues/Welat-E/Book-Publisher-App.svg?style=for-the-badge
 [issues-url]: https://github.com/Welat-E/Book-Publisher-App/issues
-[license-shield]: https://img.shields.io/github/license/Welat-E/Book-Publisher-App.svg?style=for-the-badge
-[license-url]: https://github.com/Welat-E/Book-Publisher-App/blob/master/LICENSE
+[license-shield]: https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge
+[license-url]: https://github.com/Welat-E/Book-Publisher-App/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/welateren/
