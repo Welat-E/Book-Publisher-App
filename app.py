@@ -2,15 +2,14 @@ import os
 from flask import (
     Flask,
     request,
-    render_template,
+    jsonify,
+    send_file,
     redirect,
     url_for,
     flash,
+    render_template,
     session,
-    jsonify,
-    send_file,
 )
-from models.models import Users, db, app, Author, Book, Publisher, Publication_Details
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
@@ -18,14 +17,20 @@ from flask_jwt_extended import (
     create_refresh_token,
     get_jwt_identity,
 )
-from werkzeug.security import generate_password_hash, check_password_hash
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
-import urllib3
+from flask_cors import CORS
 from flasgger import Swagger
+from models.models import Users, db, Author, Book, Publisher, Publication_Details
+from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import urlparse, parse_qs
+from config.config import Config
 
-app.config["JWT_SECRET_KEY"] = "super-secret"
+app = Flask(__name__)
+app.config.from_object(Config)
+
+db.init_app(app)  # initialise the database
+CORS(app, resources=Config.CORS_RESOURCES)
 jwt = JWTManager(app)
+
 base_dir = os.path.abspath(os.path.dirname(__file__))
 swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.yaml"))
 
