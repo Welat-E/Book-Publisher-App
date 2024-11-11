@@ -11,7 +11,6 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -83,7 +82,7 @@ This section lists the major frameworks and libraries used in the project.
 ## Getting Started
 
 ### Prerequisites
-* Python 3.8+
+* Python 3.12.3
 * Install required packages:
   
     ```bash
