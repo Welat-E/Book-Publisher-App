@@ -41,7 +41,7 @@
 
 ## About The Project
 
-This project, **Publisher Book App**, allows a publisher to manage authors' books and publication details.
+A web service designed for publishers to manage authors and their books. Each book entry includes details such as pages, chapters, release date, and more. Additionally, publishers can track publication-specific information, including price.
 
 ### Built With
 * Flask
