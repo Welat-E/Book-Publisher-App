@@ -9,7 +9,9 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <img src="images/picture.jpg" alt="Publisher Book App Banner" width="520">
+  <a href="https://github.com/othneildrew/Best-README-Template">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  </a>
 
   <h3 align="center">Publisher Book App</h3>
   <p align="center">
@@ -43,6 +45,11 @@
 
 ## About The Project
 
+<br />
+<div align="center">
+  <img src="images/picture.jpg" alt="Publisher Book App Banner" width="520">
+</div>
+<br />
 A web service designed for publishers to manage authors and their books. Each book entry includes details such as pages, chapters, release date, and more. Additionally, publishers can track publication-specific information, including price.
 
 ### Built With
