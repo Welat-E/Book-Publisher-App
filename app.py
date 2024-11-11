@@ -1,3 +1,4 @@
+import os
 from flask import (
     Flask,
     request,
@@ -9,7 +10,7 @@ from flask import (
     jsonify,
     send_file,
 )
-from models import Users, db, app, Author, Book, Publisher, Publication_Details
+from models.models import Users, db, app, Author, Book, Publisher, Publication_Details
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
@@ -25,7 +26,8 @@ from flasgger import Swagger
 
 app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
-swagger = Swagger(app, template_file="swagger.yaml")
+base_dir = os.path.abspath(os.path.dirname(__file__))
+swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.yaml"))
 
 
 # Login Route
