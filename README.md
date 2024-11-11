@@ -1,4 +1,4 @@
-<a id="top"></a>
+<a id="#top"></a>
 
 <!-- PROJECT SHIELDS -->
 [![Contributors][contributors-shield]][contributors-url]
@@ -77,7 +77,7 @@ This section lists the major frameworks and libraries used in the project.
 [PostgreSQL-img]: https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white
 [PostgreSQL-url]: https://www.postgresql.org/
 
-<p align="right">(<a href="top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -113,7 +113,7 @@ This section lists the major frameworks and libraries used in the project.
     flask run
     ```
 
-<p align="right">(<a href="top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -135,7 +135,7 @@ To explore the API documentation, navigate to `/apidocs` after starting the Flas
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-<p align="right">(<a href="top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## License
 
