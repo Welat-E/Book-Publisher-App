@@ -79,8 +79,7 @@ class Publisher(db.Model):
     publisher_name = db.Column(db.String)
 
 
-#  create database
+# create database
+
 # with app.app_context():
 #     db.create_all()
-
-print("Loaded DATABASE URI:", os.getenv("RENDER_URL"))
