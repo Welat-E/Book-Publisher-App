@@ -38,7 +38,7 @@ swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.y
 
 def is_admin():
     user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user = Users.query.get(user_id)
     return user and user.admin
 
 
