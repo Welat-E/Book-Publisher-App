@@ -101,3 +101,5 @@ create_user.py
 instance
 
 config/config.py
+
+.DS_Store

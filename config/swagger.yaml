@@ -83,6 +83,8 @@ paths:
           name: "user_id"
           required: true
           type: "integer"
+      security:
+        - JWT: []
       responses:
         200:
           description: "User deleted"
