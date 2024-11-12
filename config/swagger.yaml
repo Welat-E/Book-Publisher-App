@@ -15,7 +15,7 @@ paths:
         200:
           description: List of authors
       security:
-      - JWT: []
+      - AdminJWT: []
       summary: Get authors
       tags:
       - author
@@ -38,7 +38,7 @@ paths:
         200:
           description: Author successfully created
       security:
-      - JWT: []
+      - AdminJWT: []
       summary: Create new author
       tags:
       - author
@@ -78,7 +78,7 @@ paths:
         404:
           description: Book not found
       security:
-      - JWT: []
+      - AdminJWT: []
       summary: Delete a book
       tags:
       - book
@@ -88,7 +88,7 @@ paths:
         200:
           description: List of books
       security:
-      - JWT: []
+      - AdminJWT: []
       summary: Get all books
       tags:
       - book
@@ -115,7 +115,7 @@ paths:
         201:
           description: Book successfully added
       security:
-      - JWT: []
+      - AdminJWT: []
       summary: Add a new book
       tags:
       - book
@@ -192,7 +192,7 @@ paths:
         404:
           description: Publication details not found
       security:
-      - JWT: []
+      - AdminJWT: []
       summary: Get publication details
       tags:
       - publication details
@@ -229,7 +229,7 @@ paths:
         200:
           description: List of users
       security:
-      - JWT: []
+      - AdminJWT: []
       summary: Get all users
       tags:
       - user
