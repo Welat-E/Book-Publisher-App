@@ -1,4 +1,0 @@
-flask
-sql_alchemy
-python-dotenv
-psycopg2-binary
