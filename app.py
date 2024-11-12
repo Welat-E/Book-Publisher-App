@@ -23,6 +23,7 @@ from models.models import Users, db, Author, Book, Publisher, Publication_Detail
 from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import urlparse, parse_qs
 from config.config import Config
+from functools import wraps
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -33,6 +34,23 @@ jwt = JWTManager(app)
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.yaml"))
+
+
+def is_admin():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    return user and user.admin
+
+
+def admin_required(fn):
+    @wraps(fn)
+    @jwt_required()  # checking if it has a jwt token
+    def wrapper(*args, **kwargs):
+        if not is_admin():
+            return jsonify({"msg": "Admin access required"}), 403  # 403 if refused
+        return fn(*args, **kwargs)
+
+    return wrapper
 
 
 # Login Route
@@ -95,7 +113,7 @@ def register():
 
 
 @app.route("/users", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_users():
     # Fetch all users and convert to list of dicts in one step
     users_list = [
@@ -113,7 +131,7 @@ def get_users():
 
 
 @app.route("/users/<int:user_id>", methods=["DELETE"])
-@jwt_required()
+@admin_required
 def delete_user(user_id):
     """Deletes a user from the database."""
     try:
@@ -133,7 +151,7 @@ def delete_user(user_id):
 
 
 @app.route("/author", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_authors():
     try:
         authors_list = [
@@ -153,7 +171,7 @@ def get_authors():
 
 
 @app.route("/author", methods=["POST"])
-@jwt_required()
+@admin_required
 def create_author():
     try:
         name = request.json.get("name")
@@ -189,6 +207,7 @@ def create_author():
 
 
 @app.route("/author/<int:id>", methods=["GET"])
+@admin_required
 def show_author():
     """Shows information about the selected author, including picture and books."""
     try:
@@ -256,8 +275,8 @@ def edit_author():
 
 
 @app.route("/book", methods=["GET"])
-@jwt_required()
-def get_book_infos():
+@admin_required
+def get_all_infos():
     """Fetches information about all books."""
     try:
         books_list = [
@@ -361,7 +380,7 @@ def edit_book(book_id):
 
 
 @app.route("/publication_details", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
     print(request.query_string)

@@ -50,13 +50,13 @@ paths:
         name: id
         required: true
         type: integer
-      security:
-      - JWT: []
       responses:
         200:
           description: Author details
         404:
           description: Author not found
+      security:
+      - JWT: []
       summary: Get author by ID
       tags:
       - author
@@ -77,6 +77,8 @@ paths:
           description: Book deleted successfully
         404:
           description: Book not found
+      security:
+      - JWT: []
       summary: Delete a book
       tags:
       - book
@@ -112,6 +114,8 @@ paths:
       responses:
         201:
           description: Book successfully added
+      security:
+      - JWT: []
       summary: Add a new book
       tags:
       - book
@@ -142,6 +146,8 @@ paths:
           description: Book updated successfully
         404:
           description: Book not found
+      security:
+      - JWT: []
       summary: Edit book details
       tags:
       - book
@@ -180,13 +186,13 @@ paths:
         name: book_id
         required: true
         type: integer
-      security:
-      - JWT: []
       responses:
         200:
           description: Publication details
         404:
           description: Publication details not found
+      security:
+      - JWT: []
       summary: Get publication details
       tags:
       - publication details
