@@ -81,6 +81,7 @@ celerybeat-schedule
 # virtualenv
 venv/
 ENV/
+.venv
 
 # Spyder project settings
 .spyderproject
@@ -99,4 +100,4 @@ create_user.py
 
 instance
 
-config.py
+config/config.py
