@@ -60,22 +60,22 @@ def login():
         email = request.json.get("email")
         password = request.json.get("password")
 
-    try:
-        user = Users.query.filter_by(email=email).first()
+        try:
+            user = Users.query.filter_by(email=email).first()
 
-        if user and check_password_hash(user.password, password):
-            # generate jwt token
-            access_token = create_access_token(identity=user.user_id)
-            return jsonify(access_token=access_token)
-        else:
-            return {"Invalid email or password"}, 401
+            if user and check_password_hash(user.password, password):
+                # Generate JWT token
+                access_token = create_access_token(identity=user.user_id)
+                return jsonify(access_token=access_token)
+            else:
+                return jsonify({"msg": "Invalid email or password"}), 401
 
-    except Exception as e:
-        db.session.rollback()
-        print(f"Bug during searching for User: {e}")
-        return "An error occurred", 500
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error during user lookup: {e}")
+            return jsonify({"msg": "An error occurred"}), 500
 
-    return "Please provide your login details."
+    return jsonify({"msg": "Please provide your login details."})
 
 
 @app.route("/register", methods=["POST"])
