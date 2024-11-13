@@ -137,6 +137,8 @@ paths:
           name: "id"
           required: true
           type: "integer"
+      security:
+        - JWT: []
       responses:
         200:
           description: "Author details"
@@ -174,6 +176,8 @@ paths:
                 type: "integer"
               pages:
                 type: "integer"
+      security:
+        - JWT: []
       responses:
         201:
           description: "Book successfully added"
@@ -191,6 +195,8 @@ paths:
             properties:
               book_id:
                 type: "integer"
+      security:
+        - JWT: []
       responses:
         200:
           description: "Book deleted successfully"
@@ -222,6 +228,8 @@ paths:
                 type: "integer"
               pages:
                 type: "integer"
+      security:
+        - JWT: []
       responses:
         200:
           description: "Book updated successfully"
@@ -243,6 +251,8 @@ paths:
           name: "book_id"
           required: true
           type: "integer"
+      security:
+        - JWT: []
       responses:
         200:
           description: "Publication details"
