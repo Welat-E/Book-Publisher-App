@@ -151,6 +151,8 @@ paths:
         - "book"
       summary: "Get all books"
       description: "Fetches information about all books."
+      security:
+        - JWT: []
       responses:
         200:
           description: "List of books"
