@@ -23,7 +23,6 @@ from models.models import Users, db, Author, Book, Publisher, Publication_Detail
 from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import urlparse, parse_qs
 from config.config import Config
-from functools import wraps
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -36,23 +35,6 @@ base_dir = os.path.abspath(os.path.dirname(__file__))
 swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.yaml"))
 
 
-def is_admin():
-    user_id = get_jwt_identity()
-    user = Users.query.get(user_id)
-    return user and user.admin
-
-
-def admin_required(fn):
-    @wraps(fn)
-    @jwt_required()  # checking if it has a jwt token
-    def wrapper(*args, **kwargs):
-        if not is_admin():
-            return jsonify({"msg": "Admin access required"}), 403  # 403 if refused
-        return fn(*args, **kwargs)
-
-    return wrapper
-
-
 # Login Route
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -60,22 +42,22 @@ def login():
         email = request.json.get("email")
         password = request.json.get("password")
 
-        try:
-            user = Users.query.filter_by(email=email).first()
+    try:
+        user = Users.query.filter_by(email=email).first()
 
-            if user and check_password_hash(user.password, password):
-                # Generate JWT token
-                access_token = create_access_token(identity=user.user_id)
-                return jsonify(access_token=access_token)
-            else:
-                return jsonify({"msg": "Invalid email or password"}), 401
+        if user and check_password_hash(user.password, password):
+            # generate jwt token
+            access_token = create_access_token(identity=user.user_id)
+            return jsonify(access_token=access_token)
+        else:
+            return {"Invalid email or password."}, 401
 
-        except Exception as e:
-            db.session.rollback()
-            print(f"Error during user lookup: {e}")
-            return jsonify({"msg": "An error occurred"}), 500
+    except Exception as e:
+        db.session.rollback()
+        print(f"Bug during searching for User: {e}")
+        return "An error occurred", 500
 
-    return jsonify({"msg": "Please provide your login details."})
+    return "Please provide your login details."
 
 
 @app.route("/register", methods=["POST"])
@@ -113,7 +95,7 @@ def register():
 
 
 @app.route("/users", methods=["GET"])
-@admin_required
+@jwt_required()
 def get_users():
     # Fetch all users and convert to list of dicts in one step
     users_list = [
@@ -131,7 +113,7 @@ def get_users():
 
 
 @app.route("/users/<int:user_id>", methods=["DELETE"])
-@admin_required
+@jwt_required()
 def delete_user(user_id):
     """Deletes a user from the database."""
     try:
@@ -151,7 +133,7 @@ def delete_user(user_id):
 
 
 @app.route("/author", methods=["GET"])
-@admin_required
+@jwt_required()
 def get_authors():
     try:
         authors_list = [
@@ -171,7 +153,7 @@ def get_authors():
 
 
 @app.route("/author", methods=["POST"])
-@admin_required
+@jwt_required()
 def create_author():
     try:
         name = request.json.get("name")
@@ -207,8 +189,7 @@ def create_author():
 
 
 @app.route("/author/<int:id>", methods=["GET"])
-@admin_required
-def show_author(id):
+def show_author():
     """Shows information about the selected author, including picture and books."""
     try:
         author = Author.query.get(author_id)
@@ -275,8 +256,8 @@ def edit_author():
 
 
 @app.route("/book", methods=["GET"])
-@admin_required
-def get_all_infos():
+@jwt_required()
+def get_book_infos():
     """Fetches information about all books."""
     try:
         books_list = [
@@ -380,7 +361,7 @@ def edit_book(book_id):
 
 
 @app.route("/publication_details", methods=["GET"])
-@admin_required
+@jwt_required()
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
     print(request.query_string)

@@ -1,273 +1,257 @@
-basePath: /
-components:
-  securitySchemes:
-    AdminJWT:
-      bearerFormat: JWT
-      scheme: bearer
-      type: http
-    JWT:
-      bearerFormat: JWT
-      scheme: bearer
-      type: http
-host: book-publisher-app.onrender.com
+swagger: "2.0"
 info:
-  description: A web service designed for publishers to manage authors and their books.
-    Each book entry includes details such as pages, chapters, release date, and more.
-    Additionally, publishers can track publication-specific information, including
-    price, country, units sold, language, and other relevant data.
-  title: Publisher Book App
-  version: 1.0.0
+  version: "1.0.0"
+  title: "Publisher Book App"
+  description: "A web service designed for publishers to manage authors and their books. Each book entry includes details such as pages, chapters, release date, and more. Additionally, publishers can track publication-specific information, including price, country, units sold, language, and other relevant data."
+
+host: "book-publisher-app.onrender.com"
+basePath: "/"
+schemes:
+  - "https"
+
 paths:
-  /author:
-    get:
-      description: Fetches all authors. Requires JWT authentication.
-      responses:
-        200:
-          description: List of authors
-      security:
-      - AdminJWT: []
-      summary: Get authors
-      tags:
-      - author
-    post:
-      description: Adds a new author to the database. Requires JWT authentication.
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          properties:
-            author_image:
-              type: string
-            birth_date:
-              type: string
-            name:
-              type: string
-          type: object
-      responses:
-        200:
-          description: Author successfully created
-      security:
-      - AdminJWT: []
-      summary: Create new author
-      tags:
-      - author
-  /author/{id}:
-    get:
-      description: Fetches details of a single author based on ID.
-      parameters:
-      - in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        200:
-          description: Author details
-        404:
-          description: Author not found
-      security:
-      - JWT: []
-      summary: Get author by ID
-      tags:
-      - author
-  /book:
-    delete:
-      description: Deletes a selected book based on book_id.
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          properties:
-            book_id:
-              type: integer
-          type: object
-      responses:
-        200:
-          description: Book deleted successfully
-        404:
-          description: Book not found
-      security:
-      - AdminJWT: []
-      summary: Delete a book
-      tags:
-      - book
-    get:
-      description: Fetches information about all books.
-      responses:
-        200:
-          description: List of books
-      security:
-      - AdminJWT: []
-      summary: Get all books
-      tags:
-      - book
-    post:
-      description: Creates a new book entry.
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          properties:
-            chapters:
-              type: integer
-            cover_image:
-              type: string
-            pages:
-              type: integer
-            release_date:
-              type: string
-            user_id:
-              type: integer
-          type: object
-      responses:
-        201:
-          description: Book successfully added
-      security:
-      - AdminJWT: []
-      summary: Add a new book
-      tags:
-      - book
-  /book/{book_id}:
-    put:
-      description: Edit a selected book based on book_id.
-      parameters:
-      - in: path
-        name: book_id
-        required: true
-        type: integer
-      - in: body
-        name: body
-        required: true
-        schema:
-          properties:
-            chapters:
-              type: integer
-            cover_image:
-              type: string
-            pages:
-              type: integer
-            release_date:
-              type: string
-          type: object
-      responses:
-        200:
-          description: Book updated successfully
-        404:
-          description: Book not found
-      security:
-      - JWT: []
-      summary: Edit book details
-      tags:
-      - book
   /login:
     post:
-      description: Logs in a user and returns a JWT token.
+      tags:
+        - "auth"
+      summary: "User login"
+      description: "Logs in a user and returns a JWT token."
       parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          properties:
-            email:
-              type: string
-            password:
-              type: string
-          type: object
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              email:
+                type: "string"
+              password:
+                type: "string"
       responses:
         200:
-          description: Successful login
+          description: "Successful login"
         401:
-          description: Invalid email or password
-      summary: User login
-      tags:
-      - auth
-  /publication_details:
-    get:
-      description: Fetches detailed information about a selected book related to sales,
-        price, etc.
-      parameters:
-      - in: query
-        name: author_id
-        required: false
-        type: integer
-      - in: query
-        name: book_id
-        required: true
-        type: integer
-      responses:
-        200:
-          description: Publication details
-        404:
-          description: Publication details not found
-      security:
-      - AdminJWT: []
-      summary: Get publication details
-      tags:
-      - publication details
+          description: "Invalid email or password"
+
   /register:
     post:
-      description: Creates a new user with hashed password.
+      tags:
+        - "auth"
+      summary: "Register a new user"
+      description: "Creates a new user with hashed password."
       parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          properties:
-            email:
-              type: string
-            first_name:
-              type: string
-            last_name:
-              type: string
-            password:
-              type: string
-          type: object
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              first_name:
+                type: "string"
+              last_name:
+                type: "string"
+              email:
+                type: "string"
+              password:
+                type: "string"
       responses:
         200:
-          description: User successfully registered
+          description: "User successfully registered"
         500:
-          description: Error occurred during registration
-      summary: Register a new user
-      tags:
-      - auth
+          description: "Error occurred during registration"
+
   /users:
     get:
-      description: Fetches all users. Requires JWT authentication.
+      tags:
+        - "user"
+      summary: "Get all users"
+      description: "Fetches all users. Requires JWT authentication."
+      security:
+        - JWT: []
       responses:
         200:
-          description: List of users
-      security:
-      - AdminJWT: []
-      summary: Get all users
-      tags:
-      - user
+          description: "List of users"
+
   /users/{user_id}:
     delete:
-      description: Deletes a user based on user_id. Requires JWT authentication.
+      tags:
+        - "user"
+      summary: "Delete user"
+      description: "Deletes a user based on user_id. Requires JWT authentication."
       parameters:
-      - in: path
-        name: user_id
-        required: true
-        type: integer
+        - in: "path"
+          name: "user_id"
+          required: true
+          type: "integer"
+      security:
+        - JWT: []
       responses:
         200:
-          description: User deleted
+          description: "User deleted"
         404:
-          description: User not found
-      security:
-      - JWT: []
-      summary: Delete user
+          description: "User not found"
+
+  /author:
+    get:
       tags:
-      - user
-schemes:
-- https
+        - "author"
+      summary: "Get authors"
+      description: "Fetches all authors. Requires JWT authentication."
+      security:
+        - JWT: []
+      responses:
+        200:
+          description: "List of authors"
+    post:
+      tags:
+        - "author"
+      summary: "Create new author"
+      description: "Adds a new author to the database. Requires JWT authentication."
+      security:
+        - JWT: []
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+              author_image:
+                type: "string"
+              birth_date:
+                type: "string"
+      responses:
+        200:
+          description: "Author successfully created"
+
+  /author/{id}:
+    get:
+      tags:
+        - "author"
+      summary: "Get author by ID"
+      description: "Fetches details of a single author based on ID."
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Author details"
+        404:
+          description: "Author not found"
+
+  /book:
+    get:
+      tags:
+        - "book"
+      summary: "Get all books"
+      description: "Fetches information about all books."
+      responses:
+        200:
+          description: "List of books"
+    post:
+      tags:
+        - "book"
+      summary: "Add a new book"
+      description: "Creates a new book entry."
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              user_id:
+                type: "integer"
+              release_date:
+                type: "string"
+              cover_image:
+                type: "string"
+              chapters:
+                type: "integer"
+              pages:
+                type: "integer"
+      responses:
+        201:
+          description: "Book successfully added"
+    delete:
+      tags:
+        - "book"
+      summary: "Delete a book"
+      description: "Deletes a selected book based on book_id."
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              book_id:
+                type: "integer"
+      responses:
+        200:
+          description: "Book deleted successfully"
+        404:
+          description: "Book not found"
+
+  /book/{book_id}:
+    put:
+      tags:
+        - "book"
+      summary: "Edit book details"
+      description: "Edit a selected book based on book_id."
+      parameters:
+        - in: "path"
+          name: "book_id"
+          required: true
+          type: "integer"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              release_date:
+                type: "string"
+              cover_image:
+                type: "string"
+              chapters:
+                type: "integer"
+              pages:
+                type: "integer"
+      responses:
+        200:
+          description: "Book updated successfully"
+        404:
+          description: "Book not found"
+
+  /publication_details:
+    get:
+      tags:
+        - "publication details"
+      summary: "Get publication details"
+      description: "Fetches detailed information about a selected book related to sales, price, etc."
+      parameters:
+        - in: "query"
+          name: "author_id"
+          required: false
+          type: "integer"
+        - in: "query"
+          name: "book_id"
+          required: true
+          type: "integer"
+      responses:
+        200:
+          description: "Publication details"
+        404:
+          description: "Publication details not found"
+
 securityDefinitions:
   JWT:
-    description: 'JWT Authorization header using the Bearer scheme. Example: ''Authorization:
-      Bearer {token}'''
-    in: header
-    name: Authorization
-    type: apiKey
-swagger: '2.0'
+    type: "apiKey"
+    name: "Authorization"
+    in: "header"
+    description: "JWT Authorization header using the Bearer scheme. Example: 'Authorization: Bearer {token}'"
