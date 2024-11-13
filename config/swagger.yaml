@@ -1,4 +1,14 @@
 basePath: /
+components:
+  securitySchemes:
+    AdminJWT:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+    JWT:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
 host: book-publisher-app.onrender.com
 info:
   description: A web service designed for publishers to manage authors and their books.
