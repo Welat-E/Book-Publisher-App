@@ -183,20 +183,17 @@ paths:
       responses:
         201:
           description: "Book successfully added"
+  /book/{book_id}:
     delete:
       tags:
         - "book"
       summary: "Delete a book"
       description: "Deletes a selected book based on book_id."
       parameters:
-        - in: "body"
-          name: "body"
+        - in: "path"
+          name: "book_id"
           required: true
-          schema:
-            type: "object"
-            properties:
-              book_id:
-                type: "integer"
+          type: "integer"
       security:
         - JWT: []
       responses:
@@ -204,6 +201,7 @@ paths:
           description: "Book deleted successfully"
         404:
           description: "Book not found"
+
 
   /book/{book_id}:
     put:
