@@ -404,10 +404,11 @@ def get_publication_details():
 
 @app.route("/book", methods=["DELETE"])
 @jwt_required()
-def delete_book():
+def delete_book(id):
     """Delete a selected book"""
     try:
-        book_id = request.json.get("book", {}).get("book_id")
+        #book_id = request.json.get("book", {}).get("book_id")
+        book_id = Book.query.get(book_id)
         if not book_id:
             return jsonify({"message": "Book ID is required"}), 400
 
