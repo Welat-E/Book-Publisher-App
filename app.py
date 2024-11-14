@@ -50,7 +50,7 @@ def login():
             access_token = create_access_token(identity=user.user_id)
             return jsonify(access_token=access_token)
         else:
-            return {"Invalid email or password."}, 401
+            return {"Invalid email or password.."}, 401
 
     except Exception as e:
         db.session.rollback()
