@@ -202,8 +202,6 @@ paths:
         404:
           description: "Book not found"
 
-
-  /book/{book_id}:
     put:
       tags:
         - "book"
