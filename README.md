@@ -56,6 +56,7 @@ A web service designed for publishers to manage authors and their books. Each bo
 
 This section lists the major frameworks and libraries used in the project.
 
+* [![Python][Python-img]][Python-url]
 * [![Flask][Flask-img]][Flask-url]
 * [![SQLAlchemy][SQLAlchemy-img]][SQLAlchemy-url]
 * [![Swagger][Swagger-img]][Swagger-url]
@@ -74,6 +75,9 @@ This section lists the major frameworks and libraries used in the project.
 
 [PostgreSQL-img]: https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white
 [PostgreSQL-url]: https://www.postgresql.org/
+
+[Python-img]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
+[Python-url]: https://www.python.org/
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

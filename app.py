@@ -189,7 +189,7 @@ def create_author():
 
 
 @app.route("/author/<int:id>", methods=["GET"])
-def show_author():
+def show_author(id):
     """Shows information about the selected author, including picture and books."""
     try:
         author = Author.query.get(author_id)

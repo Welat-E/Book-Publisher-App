@@ -106,7 +106,7 @@ paths:
       tags:
         - "author"
       summary: "Create new author"
-      description: "Adds a new author to the database. Requires JWT authentication."
+      description: "Adds a new author to the database with Month-Day-Year."
       security:
         - JWT: []
       parameters:
@@ -130,7 +130,7 @@ paths:
     get:
       tags:
         - "author"
-      summary: "Get author by ID"
+      summary: "Get single author by ID"
       description: "Fetches details of a single author based on ID."
       parameters:
         - in: "path"
