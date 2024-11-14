@@ -18,7 +18,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
 )
 
-from flask_cors import CORS  #a security layer of the browsers
+from flask_cors import CORS  # a security layer of the browsers
 from flasgger import Swagger
 from models.models import Users, db, Author, Book, Publisher, Publication_Details
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -40,18 +40,18 @@ swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.y
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.json.get("email")
+        email = request.json.get("email") #we save the email, pw what we typed in swagger in variables
         password = request.json.get("password")
 
     try:
-        user = Users.query.filter_by(email=email).first()
+        user = Users.query.filter_by(email=email).first() #and it search for the first email in the database that matches with the variable
 
         if user and check_password_hash(user.password, password):
-            # generate jwt token
+            #generate jwt token if email and pw was correct like in the database
             access_token = create_access_token(identity=user.user_id)
-            return jsonify(access_token=access_token)
+            return jsonify(access_token=access_token) #returns the token
         else:
-            return {"Invalid email or password.."}, 401
+            return {"Invalid email or password.."}, 401 #unauthorized
 
     except Exception as e:
         db.session.rollback()
@@ -118,7 +118,7 @@ def get_users():
 def delete_user(user_id):
     """Deletes a user from the database."""
     try:
-        user = Users.query.get(user_id)
+        user = Users.query.get(user_id) #returns the user from the database whose user_id equals the input value
 
         if not user:
             return jsonify({"message": "User not found"}), 404
@@ -222,16 +222,16 @@ def show_author(id):
 def edit_author():
     """Edit author details."""
     try:
-        author_id = request.json.get("author_id")
-        author = Author.query.get(author_id)
+        author_id = request.json.get("author_id") #saving user input in a variable as
+        author = Author.query.get(author_id) #searching the author in the database 
 
-        if author:
+        if author: #if author found can we change all the things about author
             author.name = request.json.get("name", author.name)
             author.author_image = request.json.get("author_image", author.author_image)
             author.birth_date = request.json.get("birth_date", author.birth_date)
-            db.session.commit()
+            db.session.commit() #saving the changes
 
-            updated_author_data = {
+            updated_author_data = {  #saving new data into updated_author_data
                 "author_id": author.author_id,
                 "name": author.name,
                 "author_image": author.author_image,
@@ -241,7 +241,7 @@ def edit_author():
                 jsonify(
                     {
                         "message": "Author successfully updated",
-                        "author": updated_author_data,
+                        "author": updated_author_data, #showing new author data as return
                     }
                 ),
                 200,
@@ -261,7 +261,9 @@ def edit_author():
 def get_book_infos():
     """Fetches information about all books."""
     try:
-        books_list = [
+        books_list = [   #for each book in the book table, we create an entry as a dictionary with the data, 
+                         #and preparing it for a json response
+
             {
                 "book_id": book.book_id,
                 "user_id": book.user_id,
@@ -270,7 +272,7 @@ def get_book_infos():
                 "chapters": book.chapters,
                 "pages": book.pages,
             }
-            for book in Book.query.all()
+            for book in Book.query.all() #doing that through a list comprahison 
         ]
         return jsonify({"books": books_list}), 200
 
@@ -361,18 +363,13 @@ def edit_book(book_id):
         return jsonify({"message": "An error occurred while updating the book"}), 500
 
 
-from flask import request, jsonify
-
-
-from flask import request, jsonify
-
 @app.route("/publication_details", methods=["GET"])
 @jwt_required()
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
     print(request.query_string)
     try:
-        #take the parameters from the query request
+        # take the parameters from the query request
         user_id = request.args.get("user_id")
         book_id = request.args.get("book_id")
 
@@ -380,7 +377,8 @@ def get_publication_details():
             return jsonify({"message": "book_id is required"}), 400
 
         publication_details = Publication_Details.query.filter_by(
-            user_id=user_id, book_id=book_id).first()
+            user_id=user_id, book_id=book_id
+        ).first()
 
         if publication_details:
             details_data = {
@@ -398,7 +396,12 @@ def get_publication_details():
             return jsonify({"message": "Publication details not found"}), 404
     except Exception as e:
         print(f"Error retrieving publication details: {e}")
-        return jsonify({"message": "An error occurred while retrieving publication details"}), 500
+        return (
+            jsonify(
+                {"message": "An error occurred while retrieving publication details"}
+            ),
+            500,
+        )
 
 
 @app.route("/book/<int:book_id>", methods=["DELETE"])
@@ -406,7 +409,7 @@ def get_publication_details():
 def delete_book(book_id):
     """Delete a selected book"""
     try:
-        #searching for the book through id
+        # searching for the book through id
         book = Book.query.get(book_id)
 
         if not book:
@@ -420,7 +423,6 @@ def delete_book(book_id):
         db.session.rollback()
         print(f"Error deleting book: {e}")
         return jsonify({"message": "An error occurred while deleting the book"}), 500
-
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ info:
   title: "Publisher Book App"
   description: "A web service designed for publishers to manage authors and their books. Each book entry includes details such as pages, chapters, release date, and more. Additionally, publishers can track publication-specific information, including price, country, units sold, language, and other relevant data."
 
-host: "book-publisher-app.onrender.com"
+host: "book-publisher-app.onrender.com"  #localhost:5000
 basePath: "/"
 schemes:
   - "https"
