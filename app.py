@@ -210,8 +210,10 @@ def show_author(id):
 
     except Exception as e:
         print(f"Error retrieving author: {e}")
-        return jsonify({"message": "An error occurred while retrieving the author"}), 500
-
+        return (
+            jsonify({"message": "An error occurred while retrieving the author"}),
+            500,
+        )
 
 
 @app.route("/author", methods=["PUT"])
@@ -358,24 +360,26 @@ def edit_book(book_id):
         return jsonify({"message": "An error occurred while updating the book"}), 500
 
 
+from flask import request, jsonify
+
+
+from flask import request, jsonify
+
 @app.route("/publication_details", methods=["GET"])
 @jwt_required()
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
     print(request.query_string)
     try:
+        #take the parameters from the query request
         author_id = request.args.get("author_id")
         book_id = request.args.get("book_id")
 
-        url = "http://127.0.0.1:5000/publication_details?user_id=1&book_id=2"
-        parsed_url = urlparse(url)
-        user_id = parse_qs(parsed_url.query)["user_id"][0]
-        book_id = parse_qs(parsed_url.query)["book_id"][0]
+        if not book_id:
+            return jsonify({"message": "book_id is required"}), 400
 
-        # search for the publication details based on author_id and book_id
         publication_details = Publication_Details.query.filter_by(
-            user_id=user_id, book_id=book_id
-        ).first()
+            user_id=author_id, book_id=book_id).first()
 
         if publication_details:
             details_data = {
@@ -391,15 +395,9 @@ def get_publication_details():
             return jsonify(details_data), 200
         else:
             return jsonify({"message": "Publication details not found"}), 404
-
     except Exception as e:
         print(f"Error retrieving publication details: {e}")
-        return (
-            jsonify(
-                {"message": "An error occurred while retrieving publication details"}
-            ),
-            500,
-        )
+        return jsonify({"message": "An error occurred while retrieving publication details"}), 500
 
 
 @app.route("/book", methods=["DELETE"])
@@ -407,7 +405,7 @@ def get_publication_details():
 def delete_book(id):
     """Delete a selected book"""
     try:
-        #book_id = request.json.get("book", {}).get("book_id")
+        # book_id = request.json.get("book", {}).get("book_id")
         book_id = Book.query.get(book_id)
         if not book_id:
             return jsonify({"message": "Book ID is required"}), 400
