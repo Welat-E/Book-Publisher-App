@@ -135,7 +135,9 @@ def delete_user(user_id):
 @app.route("/author", methods=["GET"])
 @jwt_required()
 def get_authors():
+
     try:
+        author = Author.query.get(id)
         authors_list = [
             {
                 "author_id": author.author_id,
@@ -192,7 +194,7 @@ def create_author():
 def show_author(id):
     """Shows information about the selected author, including picture and books."""
     try:
-        author = Author.query.get(author_id)
+        author = Author.query.get(id)
         if author:
             author_data = {
                 "author_id": author.author_id,
@@ -210,10 +212,8 @@ def show_author(id):
 
     except Exception as e:
         print(f"Error retrieving author: {e}")
-        return (
-            jsonify({"message": "An error occurred while retrieving the author"}),
-            500,
-        )
+        return jsonify({"message": "An error occurred while retrieving the author"}), 500
+
 
 
 @app.route("/author", methods=["PUT"])
