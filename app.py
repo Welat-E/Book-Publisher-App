@@ -201,10 +201,10 @@ def show_author(id):
                 "name": author.name,
                 "author_image": author.author_image,
                 "birth_date": author.birth_date,
-                "books": [
-                    {"book_id": book.book_id, "title": book.title}
-                    for book in author.books
-                ],
+                # "books": [
+                #     {"book_id": book.book_id, "title": book.title}
+                #     for book in author.books
+                # ],
             }
             return jsonify(author_data), 200
         else:
