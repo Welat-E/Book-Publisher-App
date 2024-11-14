@@ -17,7 +17,8 @@ from flask_jwt_extended import (
     create_refresh_token,
     get_jwt_identity,
 )
-from flask_cors import CORS
+
+from flask_cors import CORS  #a security layer of the browers
 from flasgger import Swagger
 from models.models import Users, db, Author, Book, Publisher, Publication_Details
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -372,14 +373,14 @@ def get_publication_details():
     print(request.query_string)
     try:
         #take the parameters from the query request
-        author_id = request.args.get("author_id")
+        user_id = request.args.get("user_id")
         book_id = request.args.get("book_id")
 
         if not book_id:
             return jsonify({"message": "book_id is required"}), 400
 
         publication_details = Publication_Details.query.filter_by(
-            user_id=author_id, book_id=book_id).first()
+            user_id=user_id, book_id=book_id).first()
 
         if publication_details:
             details_data = {

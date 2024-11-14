@@ -246,7 +246,7 @@ paths:
       description: "Fetches detailed information about a selected book related to sales, price, etc."
       parameters:
         - in: "query"
-          name: "author_id"
+          name: "user_id"
           required: false
           type: "integer"
         - in: "query"
