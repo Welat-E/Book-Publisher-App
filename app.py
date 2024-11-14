@@ -18,7 +18,7 @@ from flask_jwt_extended import (
     get_jwt_identity,
 )
 
-from flask_cors import CORS  #a security layer of the browers
+from flask_cors import CORS  #a security layer of the browsers
 from flasgger import Swagger
 from models.models import Users, db, Author, Book, Publisher, Publication_Details
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -401,29 +401,26 @@ def get_publication_details():
         return jsonify({"message": "An error occurred while retrieving publication details"}), 500
 
 
-@app.route("/book", methods=["DELETE"])
+@app.route("/book/<int:book_id>", methods=["DELETE"])
 @jwt_required()
-def delete_book(id):
+def delete_book(book_id):
     """Delete a selected book"""
     try:
-        # book_id = request.json.get("book", {}).get("book_id")
-        book_id = Book.query.get(book_id)
-        if not book_id:
-            return jsonify({"message": "Book ID is required"}), 400
+        #searching for the book through id
+        book = Book.query.get(book_id)
 
-        book = db.session.get(Book, book_id)
-
-        if book:
-            db.session.delete(book)
-            db.session.commit()
-            return jsonify({"message": "Book successfully deleted"}), 200
-        else:
+        if not book:
             return jsonify({"message": "Book not found"}), 404
+
+        db.session.delete(book)
+        db.session.commit()
+        return jsonify({"message": "Book successfully deleted"}), 200
 
     except Exception as e:
         db.session.rollback()
         print(f"Error deleting book: {e}")
         return jsonify({"message": "An error occurred while deleting the book"}), 500
+
 
 
 if __name__ == "__main__":
