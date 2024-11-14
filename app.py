@@ -135,9 +135,7 @@ def delete_user(user_id):
 @app.route("/author", methods=["GET"])
 @jwt_required()
 def get_authors():
-
     try:
-        author = Author.query.get(id)
         authors_list = [
             {
                 "author_id": author.author_id,
