@@ -52,6 +52,18 @@
 <br />
 A web service designed for publishers to manage authors and their books. Each book entry includes details such as pages, chapters, release date, and more. Additionally, publishers can track publication-specific information, including price.
 
+
+### Features
+
+- **User Authentication**: Secure login and registration with JWT authentication.
+- **Author Management**: Add, view, and manage author profiles.
+- **Book Management**: Create, edit, and delete books; track chapters, pages, release dates, and cover images.
+- **Publication Details**: Monitor price, units sold, country, language; view details by book or author.
+- **User Administration**: Manage user accounts and delete users.
+- **API Documentation**: Swagger-based, interactive API docs for easy testing.
+
+
+
 ### Built With
 
 This section lists the major frameworks and libraries used in the project.
