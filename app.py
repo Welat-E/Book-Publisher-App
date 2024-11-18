@@ -52,9 +52,6 @@ def login():
         else:
             return {"Invalid email or password.."}, 401 #unauthorized
 
-        current_user = jsonify(access_token=access_token)
-
-        if current.user 
 
     except Exception as e:
         db.session.rollback()
