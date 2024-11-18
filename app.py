@@ -118,22 +118,25 @@ def get_users():
 def delete_user(user_id):
     """Deletes a user from the database."""
     try:
-        user = Users.query.get(user_id) #returns the user from the database whose user_id equals the input value
+        current_user_id = get_jwt_identity()
+        current_user = Users.query.get(current_user_id)
 
+        if not current_user or not current_user.admin:
+            return jsonify({"message": "Only admins can delete users"}), 403
+
+        user = Users.query.get(user_id)
         if not user:
             return jsonify({"message": "User not found"}), 404
-            
-        if user == user_id:
-            db.session.delete(user)
-            db.session.commit()
-            return jsonify({"message": "User successfully deleted"}), 200
-        else:
-            return jsonify({"message": "You can not delete other Users."})
+
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"message": "User successfully deleted"}), 200
 
     except Exception as e:
         db.session.rollback()
         print(f"Error deleting user: {e}")
-    return jsonify({"message": "An error occurred while deleting the user"}), 500
+        return jsonify({"message": "An error occurred while deleting the user"}), 500
+
 
 
 @app.route("/author", methods=["GET"])
