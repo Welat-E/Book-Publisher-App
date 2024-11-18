@@ -44,14 +44,17 @@ def login():
         password = request.json.get("password")
 
     try:
-        user = Users.query.filter_by(email=email).first() #and it search for the first email in the database that matches with the variable
+        user = Users.query.filter_by(email=email).first() #it searches for the first email in the db that matches with the variable
 
         if user and check_password_hash(user.password, password):
-            #generate jwt token if email and pw was correct like in the database
-            access_token = create_access_token(identity=user.user_id)
+            access_token = create_access_token(identity=user.user_id)#generate jwt token if email and pw was correct like in db
             return jsonify(access_token=access_token) #returns the token
         else:
             return {"Invalid email or password.."}, 401 #unauthorized
+
+        current_user = jsonify(access_token=access_token)
+
+        if current.user 
 
     except Exception as e:
         db.session.rollback()
@@ -122,10 +125,13 @@ def delete_user(user_id):
 
         if not user:
             return jsonify({"message": "User not found"}), 404
-
-        db.session.delete(user)
-        db.session.commit()
-        return jsonify({"message": "User successfully deleted"}), 200
+            
+        if user == user_id:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({"message": "User successfully deleted"}), 200
+        else:
+            return jsonify({"message": "You can not delete other Users."})
 
     except Exception as e:
         db.session.rollback()
@@ -272,9 +278,9 @@ def get_book_infos():
                 "chapters": book.chapters,
                 "pages": book.pages,
             }
-            for book in Book.query.all() #doing that through a list comprahison 
+            for book in Book.query.all()
         ]
-        return jsonify({"books": books_list}), 200
+        return jsonify({"Here are all books in your database:": books_list}), 200
 
     except Exception as e:
         print(f"Error retrieving books: {e}")
