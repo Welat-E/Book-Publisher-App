@@ -8,13 +8,15 @@ from flask import (
     url_for,
     flash,
     render_template,
-    session,)
+    session,
+)
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
     create_access_token,
     create_refresh_token,
-    get_jwt_identity,)
+    get_jwt_identity,
+)
 from flask_cors import CORS  # a security layer of the browsers
 from flasgger import Swagger
 from models.models import Users, db, Author, Book, Publisher, Publication_Details
@@ -59,17 +61,26 @@ def admin_required(fn):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.json.get("email")  # we save the email, pw what we typed in swagger in variables
+        email = request.json.get(
+            "email"
+        )  # we save the email, pw what we typed in swagger in variables
         password = request.json.get("password")
     try:
-        user = Users.query.filter_by(email=email).first()  # it searches for the first email
+        user = Users.query.filter_by(
+            email=email
+        ).first()  # it searches for the first email
         # in the db that matches with the variable
         if user and check_password_hash(user.password, password):
-            access_token = create_access_token(identity=str(user.user_id))  # generate jwt token if email and pw was correct like in db
+            access_token = create_access_token(
+                identity=str(user.user_id)
+            )  # generate jwt token if email and pw was correct like in db
 
-            return jsonify({
-                "access_token": access_token.decode("utf-8"),
-                "message": "User successfully logged in."})
+            return jsonify(
+                {
+                    "access_token": access_token.decode("utf-8"),
+                    "message": "User successfully logged in.",
+                }
+            )
         else:
             return {"Invalid email or password.."}, 401  # unauthorized
 
@@ -81,7 +92,6 @@ def login():
     return "Please provide your login details."
 
     print(f"user_id: {user.user_id}, type: {type(user.user_id)}")
-
 
 
 @app.route("/register", methods=["POST"])
@@ -101,7 +111,6 @@ def register():
         db.session.add(create_user)
         db.session.commit()
         return jsonify({"message": "User successfully registered."}), 200
-
 
         return (
             jsonify(
@@ -139,17 +148,23 @@ def get_users():
 
 
 @app.route("/users/<int:user_id>", methods=["DELETE"])
-@admin_required
+@jwt_required()
 def delete_user(user_id):
-    """Deletes a user from the database."""
+    """Allows a user or an admin to delete a user account."""
     try:
-        user = Users.query.get(user_id)
-        if not user:
+        current_user_id = get_jwt_identity()  # ID from logged in Users from the JWT
+        user_to_delete = Users.query.get(user_id)
+
+        if not user_to_delete:
             return jsonify({"message": "User not found"}), 404
 
-        db.session.delete(user)
+        # Check whether the logged in user is an admin or wants to delete themselves
+        if not (current_user_id == user_id or is_admin()):
+            return jsonify({"message": "Permission denied"}), 403
+
+        db.session.delete(user_to_delete)
         db.session.commit()
-        return jsonify({"message": "User successfully deleted"}), 200
+        return jsonify({"message": "User and related data successfully deleted"}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -232,11 +247,12 @@ def show_author(id):
                         "release_date": book.release_date,
                         "cover_image": book.cover_image,
                         "chapters": book.chapters,
-                        "pages": book.pages
-                    } for book in author.books
-                ]
+                        "pages": book.pages,
+                    }
+                    for book in author.books
+                ],
             }
-                
+
             return jsonify(author_data), 200
         else:
             return jsonify({"message": "Author not found"}), 404

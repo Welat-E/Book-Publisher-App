@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from passlib.context import CryptContext
 from datetime import timedelta
 from flask_cors import CORS
+#from flask_migrate import Migrate
 
 load_dotenv()
 
@@ -26,8 +27,8 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column("password", db.String, nullable=False)
 
-    authors = db.relationship("Author", back_populates="user", lazy=True)
-    books = db.relationship("Book", back_populates="user", lazy=True)
+    authors = db.relationship("Author", back_populates="user", lazy=True, cascade="all, delete-orphan")
+    books = db.relationship("Book", back_populates="user", lazy=True, cascade="all, delete-orphan")
     publishers = db.relationship("Publisher", back_populates="user", lazy=True)
 
 
@@ -40,10 +41,9 @@ class Author(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
 
     user = db.relationship("Users", back_populates="authors")
-    publication_details = db.relationship(
-        "Publication_Details", back_populates="author", lazy=True
-    )
+    publication_details = db.relationship("Publication_Details", back_populates="author", lazy=True)
     books = db.relationship("Book", back_populates="author", lazy=True)
+    
 
 
 class Book(db.Model):
