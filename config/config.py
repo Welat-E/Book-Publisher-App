@@ -9,7 +9,7 @@ load_dotenv()
 
 class Config:
     # database config
-    SQLALCHEMY_DATABASE_URI = os.getenv("RENDER_URL")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # JWT-config

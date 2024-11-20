@@ -1,8 +1,8 @@
+import os
 from flask import Flask
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask_sqlalchemy import SQLAlchemy
-import os
 from dotenv import load_dotenv
 from passlib.context import CryptContext
 from datetime import timedelta
@@ -29,12 +29,10 @@ class Users(db.Model, UserMixin):
 
     authors = db.relationship("Author", backref="user", lazy=True)
     books = db.relationship("Book", backref="user", lazy=True)
-    publication_details = db.relationship("Publication_Details", backref="user", lazy=True)
+    publication_details = db.relationship(
+        "Publication_Details", backref="user", lazy=True
+    )
     publishers = db.relationship("Publisher", backref="user", lazy=True)
-
-    # def __init__(self, first_name, last_name):
-    #     self.first_name = first_name
-    #     self.last_name = last_name
 
 
 class Author(db.Model):
@@ -50,6 +48,7 @@ class Book(db.Model):
     __tablename__ = "Book"
     book_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
+    title = db.Column(db.String)
     release_date = db.Column(db.String)
     cover_image = db.Column(db.String)
     chapters = db.Column(db.Integer)
@@ -64,7 +63,7 @@ class Publication_Details(db.Model):
     __tablename__ = "Publication_Details"
     id = db.Column(db.Integer, primary_key=True)
     book_id = db.Column(db.Integer, db.ForeignKey("Book.book_id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
+    author_id = db.Column(db.Integer, db.ForeignKey("Author.author_id"))
     price = db.Column(db.Numeric)
     country = db.Column(db.String)
     units = db.Column(db.Integer)

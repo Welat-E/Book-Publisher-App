@@ -36,22 +36,48 @@ base_dir = os.path.abspath(os.path.dirname(__file__))
 swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.yaml"))
 
 
+def is_admin():
+    user_id = get_jwt_identity()
+    user = Users.query.get(user_id)
+    if user:
+        print(f"User ID: {user_id}, Admin: {user.admin}")
+    return user and user.admin
+
+
+def admin_required(fn):
+    @wraps(fn)
+    @jwt_required()  # Ensure authentication
+    def wrapper(*args, **kwargs):
+        user_id = get_jwt_identity()
+        user = Users.query.get(user_id)  # get user from db
+        if not user or not user.admin:  # check if you have admin permission
+            return jsonify({"msg": "Admin access required"}), 403
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
 # Login Route
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.json.get("email") #we save the email, pw what we typed in swagger in variables
+        email = request.json.get(
+            "email"
+        )  # we save the email, pw what we typed in swagger in variables
         password = request.json.get("password")
 
     try:
-        user = Users.query.filter_by(email=email).first() #it searches for the first email in the db that matches with the variable
+        user = Users.query.filter_by(
+            email=email
+        ).first()  # it searches for the first email in the db that matches with the variable
 
         if user and check_password_hash(user.password, password):
-            access_token = create_access_token(identity=user.user_id)#generate jwt token if email and pw was correct like in db
-            return jsonify(access_token=access_token) #returns the token
+            access_token = create_access_token(
+                identity=user.user_id
+            )  # generate jwt token if email and pw was correct like in db
+            return jsonify(access_token=access_token)  # returns the token
         else:
-            return {"Invalid email or password.."}, 401 #unauthorized
-
+            return {"Invalid email or password.."}, 401  # unauthorized
 
     except Exception as e:
         db.session.rollback()
@@ -96,7 +122,7 @@ def register():
 
 
 @app.route("/users", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_users():
     # Fetch all users and convert to list of dicts in one step
     users_list = [
@@ -114,16 +140,10 @@ def get_users():
 
 
 @app.route("/users/<int:user_id>", methods=["DELETE"])
-@jwt_required()
+@admin_required
 def delete_user(user_id):
     """Deletes a user from the database."""
     try:
-        current_user_id = get_jwt_identity()
-        current_user = Users.query.get(current_user_id)
-
-        if not current_user or not current_user.admin:
-            return jsonify({"message": "Only admins can delete users"}), 403
-
         user = Users.query.get(user_id)
         if not user:
             return jsonify({"message": "User not found"}), 404
@@ -138,9 +158,8 @@ def delete_user(user_id):
         return jsonify({"message": "An error occurred while deleting the user"}), 500
 
 
-
 @app.route("/author", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_authors():
     try:
         authors_list = [
@@ -160,7 +179,7 @@ def get_authors():
 
 
 @app.route("/author", methods=["POST"])
-@jwt_required()
+@admin_required
 def create_author():
     try:
         name = request.json.get("name")
@@ -196,6 +215,7 @@ def create_author():
 
 
 @app.route("/author/<int:id>", methods=["GET"])
+@jwt_required()
 def show_author(id):
     """Shows information about the selected author, including picture and books."""
     try:
@@ -224,20 +244,20 @@ def show_author(id):
 
 
 @app.route("/author", methods=["PUT"])
-@jwt_required()
+@admin_required
 def edit_author():
     """Edit author details."""
     try:
-        author_id = request.json.get("author_id") #saving user input in a variable as
-        author = Author.query.get(author_id) #searching the author in the database 
+        author_id = request.json.get("author_id")  # saving user input in a variable as
+        author = Author.query.get(author_id)  # searching the author in the database
 
-        if author: #if author found can we change all the things about author
+        if author:  # if author found can we change all the things about author
             author.name = request.json.get("name", author.name)
             author.author_image = request.json.get("author_image", author.author_image)
             author.birth_date = request.json.get("birth_date", author.birth_date)
-            db.session.commit() #saving the changes
+            db.session.commit()  # saving the changes
 
-            updated_author_data = {  #saving new data into updated_author_data
+            updated_author_data = {  # saving new data into updated_author_data
                 "author_id": author.author_id,
                 "name": author.name,
                 "author_image": author.author_image,
@@ -247,7 +267,7 @@ def edit_author():
                 jsonify(
                     {
                         "message": "Author successfully updated",
-                        "author": updated_author_data, #showing new author data as return
+                        "author": updated_author_data,  # showing new author data as return
                     }
                 ),
                 200,
@@ -263,13 +283,12 @@ def edit_author():
 
 
 @app.route("/book", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_book_infos():
     """Fetches information about all books."""
     try:
-        books_list = [   #for each book in the book table, we create an entry as a dictionary with the data, 
-                         #and preparing it for a json response
-
+        books_list = [  # for each book in the book table, we create an entry as a dictionary with the data,
+            # and preparing it for a json response
             {
                 "book_id": book.book_id,
                 "user_id": book.user_id,
@@ -277,6 +296,7 @@ def get_book_infos():
                 "cover_image": book.cover_image,
                 "chapters": book.chapters,
                 "pages": book.pages,
+                "title": book.title,
             }
             for book in Book.query.all()
         ]
@@ -333,6 +353,7 @@ def add_book():
 
 
 @app.route("/book/<int:book_id>", methods=["PUT"])
+@jwt_required()
 def edit_book(book_id):
     """Edit a selected book based on book_id."""
     try:
@@ -370,7 +391,7 @@ def edit_book(book_id):
 
 
 @app.route("/publication_details", methods=["GET"])
-@jwt_required()
+@admin_required
 def get_publication_details():
     """Shows detailed information about a selected book related to sales, price, etc."""
     print(request.query_string)
