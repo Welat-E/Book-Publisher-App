@@ -224,22 +224,26 @@ def show_author(id):
                 "author_id": author.author_id,
                 "name": author.name,
                 "author_image": author.author_image,
-                "birth_date": author.birth_date,
-                # "books": [
-                #     {"book_id": book.book_id, "title": book.title}
-                #     for book in author.books
-                # ],
+                "birth_date": str(author.birth_date) if author.birth_date else None,
+                "books": [
+                    {
+                        "book_id": book.book_id,
+                        "title": book.title,
+                        "release_date": book.release_date,
+                        "cover_image": book.cover_image,
+                        "chapters": book.chapters,
+                        "pages": book.pages
+                    } for book in author.books
+                ]
             }
+                
             return jsonify(author_data), 200
         else:
             return jsonify({"message": "Author not found"}), 404
 
     except Exception as e:
         print(f"Error retrieving author: {e}")
-        return (
-            jsonify({"message": "An error occurred while retrieving the author"}),
-            500,
-        )
+        return (jsonify({"message": "An error occurred while retrieving the author"}), 500,)
 
 
 @app.route("/author", methods=["PUT"])

@@ -18,7 +18,6 @@ db = SQLAlchemy()
 
 
 class Users(db.Model, UserMixin):
-
     __tablename__ = "Users"
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String, nullable=False)
@@ -27,9 +26,9 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column("password", db.String, nullable=False)
 
-    authors = db.relationship("Author", backref="user", lazy=True)
-    books = db.relationship("Book", backref="user", lazy=True)
-    publishers = db.relationship("Publisher", backref="user", lazy=True)
+    authors = db.relationship("Author", back_populates="user", lazy=True)
+    books = db.relationship("Book", back_populates="user", lazy=True)
+    publishers = db.relationship("Publisher", back_populates="user", lazy=True)
 
 
 class Author(db.Model):
@@ -40,21 +39,29 @@ class Author(db.Model):
     birth_date = db.Column(db.Date)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
 
-    publication_details = db.relationship("Publication_Details", backref="Author", lazy=True)
-    books = db.relationship("Book", backref="Author", lazy=True)
+    user = db.relationship("Users", back_populates="authors")
+    publication_details = db.relationship(
+        "Publication_Details", back_populates="author", lazy=True
+    )
+    books = db.relationship("Book", back_populates="author", lazy=True)
 
 
 class Book(db.Model):
     __tablename__ = "Book"
     book_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
+    author_id = db.Column(db.Integer, db.ForeignKey("Author.author_id"))
     title = db.Column(db.String)
     release_date = db.Column(db.String)
     cover_image = db.Column(db.String)
     chapters = db.Column(db.Integer)
     pages = db.Column(db.Integer)
 
-    
+    user = db.relationship("Users", back_populates="books")
+    author = db.relationship("Author", back_populates="books")
+    publication_details = db.relationship(
+        "Publication_Details", back_populates="book", lazy=True
+    )
 
 
 class Publication_Details(db.Model):
@@ -68,12 +75,17 @@ class Publication_Details(db.Model):
     link = db.Column(db.Text)
     language = db.Column(db.String)
 
+    book = db.relationship("Book", back_populates="publication_details")
+    author = db.relationship("Author", back_populates="publication_details")
+
 
 class Publisher(db.Model):
     __tablename__ = "Publisher"
     publisher_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
     publisher_name = db.Column(db.String)
+
+    user = db.relationship("Users", back_populates="publishers")
 
 
 # create database
