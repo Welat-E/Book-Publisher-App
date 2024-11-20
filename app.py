@@ -8,22 +8,20 @@ from flask import (
     url_for,
     flash,
     render_template,
-    session,
-)
+    session,)
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
     create_access_token,
     create_refresh_token,
-    get_jwt_identity,
-)
-
+    get_jwt_identity,)
 from flask_cors import CORS  # a security layer of the browsers
 from flasgger import Swagger
 from models.models import Users, db, Author, Book, Publisher, Publication_Details
 from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import urlparse, parse_qs
 from config.config import Config
+from functools import wraps
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -61,21 +59,17 @@ def admin_required(fn):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.json.get(
-            "email"
-        )  # we save the email, pw what we typed in swagger in variables
+        email = request.json.get("email")  # we save the email, pw what we typed in swagger in variables
         password = request.json.get("password")
-
     try:
-        user = Users.query.filter_by(
-            email=email
-        ).first()  # it searches for the first email in the db that matches with the variable
-
+        user = Users.query.filter_by(email=email).first()  # it searches for the first email
+        # in the db that matches with the variable
         if user and check_password_hash(user.password, password):
-            access_token = create_access_token(
-                identity=user.user_id
-            )  # generate jwt token if email and pw was correct like in db
-            return jsonify(access_token=access_token)  # returns the token
+            access_token = create_access_token(identity=str(user.user_id))  # generate jwt token if email and pw was correct like in db
+
+            return jsonify({
+                "access_token": access_token.decode("utf-8"),
+                "message": "User successfully logged in."})
         else:
             return {"Invalid email or password.."}, 401  # unauthorized
 
@@ -85,6 +79,9 @@ def login():
         return "An error occurred", 500
 
     return "Please provide your login details."
+
+    print(f"user_id: {user.user_id}, type: {type(user.user_id)}")
+
 
 
 @app.route("/register", methods=["POST"])
@@ -103,6 +100,8 @@ def register():
 
         db.session.add(create_user)
         db.session.commit()
+        return jsonify({"message": "User successfully registered."}), 200
+
 
         return (
             jsonify(

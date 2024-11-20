@@ -29,9 +29,6 @@ class Users(db.Model, UserMixin):
 
     authors = db.relationship("Author", backref="user", lazy=True)
     books = db.relationship("Book", backref="user", lazy=True)
-    publication_details = db.relationship(
-        "Publication_Details", backref="user", lazy=True
-    )
     publishers = db.relationship("Publisher", backref="user", lazy=True)
 
 
@@ -42,6 +39,9 @@ class Author(db.Model):
     author_image = db.Column(db.Text)
     birth_date = db.Column(db.Date)
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
+
+    publication_details = db.relationship("Publication_Details", backref="Author", lazy=True)
+    books = db.relationship("Book", backref="Author", lazy=True)
 
 
 class Book(db.Model):
@@ -54,9 +54,7 @@ class Book(db.Model):
     chapters = db.Column(db.Integer)
     pages = db.Column(db.Integer)
 
-    publication_details = db.relationship(
-        "Publication_Details", backref="book", lazy=True
-    )
+    
 
 
 class Publication_Details(db.Model):
