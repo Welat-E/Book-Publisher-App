@@ -60,11 +60,10 @@ def admin_required(fn):
 # Login Route
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        email = request.json.get(
-            "email"
-        )  # we save the email, pw what we typed in swagger in variables
-        password = request.json.get("password")
+    if request.method == "POST":  # we save the email,
+        email = request.json.get("email")  # pw what we typed
+        password = request.json.get("password")  # in swagger in variables
+
     try:
         user = Users.query.filter_by(
             email=email
@@ -90,8 +89,6 @@ def login():
         return "An error occurred", 500
 
     return "Please provide your login details."
-
-    print(f"user_id: {user.user_id}, type: {type(user.user_id)}")
 
 
 @app.route("/register", methods=["POST"])
@@ -152,14 +149,13 @@ def get_users():
 def delete_user(user_id):
     """Allows a user or an admin to delete a user account."""
     try:
-        current_user_id = get_jwt_identity()  # ID from logged in Users from the JWT
+        current_user_id = int(get_jwt_identity())  # ID from logged in Users from the JWT
         user_to_delete = Users.query.get(user_id)
-
         if not user_to_delete:
             return jsonify({"message": "User not found"}), 404
 
         # Check whether the logged in user is an admin or wants to delete themselves
-        if not (current_user_id == user_id or is_admin()):
+        if not (current_user_id == user_to_delete.user_id or is_admin()):
             return jsonify({"message": "Permission denied"}), 403
 
         db.session.delete(user_to_delete)
@@ -193,15 +189,17 @@ def get_authors():
 
 
 @app.route("/author", methods=["POST"])
-@admin_required
+@jwt_required()
 def create_author():
     try:
+        user_id = int(get_jwt_identity())
         name = request.json.get("name")
         author = Author.query.filter_by(name=name).first()
         if author:
             return "The Author already exists in the database"
 
         new_author = Author(
+            user_id=user_id,
             name=name,
             author_image=request.json.get("author_image"),
             birth_date=request.json.get("birth_date"),
@@ -217,6 +215,8 @@ def create_author():
                     "name": new_author.name,
                     "author_image": new_author.author_image,
                     "birth_date": new_author.birth_date,
+                    "user_id": new_author.user_id,
+                    "author_id": new_author.author_id,
                 }
             ),
             200,
@@ -259,7 +259,10 @@ def show_author(id):
 
     except Exception as e:
         print(f"Error retrieving author: {e}")
-        return (jsonify({"message": "An error occurred while retrieving the author"}), 500,)
+        return (
+            jsonify({"message": "An error occurred while retrieving the author"}),
+            500,
+        )
 
 
 @app.route("/author", methods=["PUT"])
@@ -332,11 +335,17 @@ def add_book():
     """Add a new book for a selected author."""
     try:
         # retrieve values from the request
-        user_id = request.json.get("user_id")
+        user_id = int(get_jwt_identity())
         release_date = request.json.get("release_date")
         cover_image = request.json.get("cover_image")
         chapters = request.json.get("chapters")
         pages = request.json.get("pages")
+        title = request.json.get("title")
+        author = request.json.get("author_id")
+
+        author_search = Author.query.get(author)
+        if not author_search:
+            return jsonify({"message": "Author not found in the database."}), 404
 
         new_book = Book(
             user_id=user_id,
@@ -344,6 +353,8 @@ def add_book():
             cover_image=cover_image,
             chapters=chapters,
             pages=pages,
+            title=title,
+            author_id=author,
         )
         db.session.add(new_book)
         db.session.commit()
@@ -359,6 +370,8 @@ def add_book():
                         "cover_image": new_book.cover_image,
                         "chapters": new_book.chapters,
                         "pages": new_book.pages,
+                        "title": new_book.title,
+                        "author": new_book.author_id,
                     },
                 }
             ),
