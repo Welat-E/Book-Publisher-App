@@ -245,13 +245,13 @@ def show_author(id):
                 "birth_date": str(author.birth_date) if author.birth_date else None,
                 "books": [
                     {
-                        "book_id": new_book.book_id,
-                        "user_id": new_book.user_id,
-                        "author_id": new_book.author_id,
-                        "title": new_book.title,
-                        "release_date": new_book.release_date,
-                        "isbn": new_book.isbn,
-                        "authors_name": new_book.authors_name,
+                        "book_id": book.book_id,
+                        "user_id": book.user_id,
+                        "author_id": book.author_id,
+                        "title": book.title,
+                        "release_date": book.release_date,
+                        "isbn": book.isbn,
+                        "authors_name": book.authors_name,
                     }
                     for book in author.books
                 ],
@@ -264,9 +264,7 @@ def show_author(id):
     except Exception as e:
         print(f"Error retrieving author: {e}")
         return (
-            jsonify({"message": "An error occurred while retrieving the author"}),
-            500,
-        )
+            jsonify({"message": "An error occurred while retrieving the author"}), 500,)
 
 
 @app.route("/author", methods=["PUT"])
