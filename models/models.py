@@ -53,15 +53,12 @@ class Book(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey("Author.author_id"))
     title = db.Column(db.String)
     release_date = db.Column(db.String)
-    cover_image = db.Column(db.String)
-    chapters = db.Column(db.Integer)
-    pages = db.Column(db.Integer)
+    isbn = db.Column(db.String)
+    authors_name = db.Column(db.String)
 
     user = db.relationship("Users", back_populates="books")
     author = db.relationship("Author", back_populates="books")
-    publication_details = db.relationship(
-        "Publication_Details", back_populates="book", lazy=True
-    )
+    publication_details = db.relationship("Publication_Details", back_populates="book", lazy=True)
 
 
 class Publication_Details(db.Model):

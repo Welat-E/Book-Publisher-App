@@ -24,6 +24,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import urlparse, parse_qs
 from config.config import Config
 from functools import wraps
+from isbnlib import desc, cover, meta
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -149,7 +150,9 @@ def get_users():
 def delete_user(user_id):
     """Allows a user or an admin to delete a user account."""
     try:
-        current_user_id = int(get_jwt_identity())  # ID from logged in Users from the JWT
+        current_user_id = int(
+            get_jwt_identity()
+        )  # ID from logged in Users from the JWT
         user_to_delete = Users.query.get(user_id)
         if not user_to_delete:
             return jsonify({"message": "User not found"}), 404
@@ -242,12 +245,13 @@ def show_author(id):
                 "birth_date": str(author.birth_date) if author.birth_date else None,
                 "books": [
                     {
-                        "book_id": book.book_id,
-                        "title": book.title,
-                        "release_date": book.release_date,
-                        "cover_image": book.cover_image,
-                        "chapters": book.chapters,
-                        "pages": book.pages,
+                        "book_id": new_book.book_id,
+                        "user_id": new_book.user_id,
+                        "author_id": new_book.author_id,
+                        "title": new_book.title,
+                        "release_date": new_book.release_date,
+                        "isbn": new_book.isbn,
+                        "authors_name": new_book.authors_name,
                     }
                     for book in author.books
                 ],
@@ -312,13 +316,11 @@ def get_book_infos():
         books_list = [  # for each book in the book table, we create an entry as a dictionary with the data,
             # and preparing it for a json response
             {
-                "book_id": book.book_id,
-                "user_id": book.user_id,
-                "release_date": book.release_date,
-                "cover_image": book.cover_image,
-                "chapters": book.chapters,
-                "pages": book.pages,
-                "title": book.title,
+                "author_id": new_book.author_id,
+                "title": new_book.title,
+                "release_date": new_book.release_date,
+                "isbn": new_book.isbn,
+                "authors_name": new_book.authors_name,
             }
             for book in Book.query.all()
         ]
@@ -334,31 +336,27 @@ def get_book_infos():
 def add_book():
     """Add a new book for a selected author."""
     try:
-        # retrieve values from the request
         user_id = int(get_jwt_identity())
-        release_date = request.json.get("release_date")
-        cover_image = request.json.get("cover_image")
-        chapters = request.json.get("chapters")
-        pages = request.json.get("pages")
-        title = request.json.get("title")
-        author = request.json.get("author_id")
+        author_id = request.json.get("author_id")
+        isbn = request.json.get("isbn")
+        meta_data = meta(isbn, service="openl")  # Fetch data using isbnlib
 
-        author_search = Author.query.get(author)
-        if not author_search:
-            return jsonify({"message": "Author not found in the database."}), 404
+        if not meta_data:
+            return jsonify({"message": "Invalid ISBN provided."}), 400
 
         new_book = Book(
             user_id=user_id,
-            release_date=release_date,
-            cover_image=cover_image,
-            chapters=chapters,
-            pages=pages,
-            title=title,
-            author_id=author,
+            author_id=author_id,
+            title=meta_data.get("Title"),
+            release_date=meta_data.get("Year"),
+            isbn=isbn,
+            authors_name=", ".join(meta_data.get("Authors", [])),
         )
         db.session.add(new_book)
         db.session.commit()
+        print(f"Meta data fetched: {meta_data}")
 
+        # json response
         return (
             jsonify(
                 {
@@ -366,12 +364,11 @@ def add_book():
                     "book": {
                         "book_id": new_book.book_id,
                         "user_id": new_book.user_id,
-                        "release_date": new_book.release_date,
-                        "cover_image": new_book.cover_image,
-                        "chapters": new_book.chapters,
-                        "pages": new_book.pages,
+                        "author_id": new_book.author_id,
                         "title": new_book.title,
-                        "author": new_book.author_id,
+                        "release_date": new_book.release_date,
+                        "isbn": new_book.isbn,
+                        "authors_name": new_book.authors_name,
                     },
                 }
             ),
@@ -394,18 +391,21 @@ def edit_book(book_id):
 
         if book:
             book.release_date = request.json.get("release_date", book.release_date)
-            book.cover_image = request.json.get("cover_image", book.cover_image)
-            book.chapters = request.json.get("chapters", book.chapters)
-            book.pages = request.json.get("pages", book.pages)
+            book.title = request.json.get("title", book.title)
+            book.release_date = request.json.get("release_date", book.release_date)
+            book.isbn = request.json.get("isbn", book.isbn)
+            book.authors_name = request.json.get("authors_name", book.authors_name)
 
             db.session.commit()
 
             updated_book_data = {
-                "book_id": book.book_id,
-                "release_date": book.release_date,
-                "cover_image": book.cover_image,
-                "chapters": book.chapters,
-                "pages": book.pages,
+                "book_id": new_book.book_id,
+                "user_id": new_book.user_id,
+                "author_id": new_book.author_id,
+                "title": new_book.title,
+                "release_date": new_book.release_date,
+                "isbn": new_book.isbn,
+                "authors_name": new_book.authors_name,
             }
             return (
                 jsonify(
