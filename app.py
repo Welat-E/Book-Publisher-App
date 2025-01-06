@@ -1,40 +1,5 @@
-import os
-from flask import (
-    Flask,
-    request,
-    jsonify,
-    send_file,
-    redirect,
-    url_for,
-    flash,
-    render_template,
-    session,
-)
-from flask_jwt_extended import (
-    JWTManager,
-    jwt_required,
-    create_access_token,
-    create_refresh_token,
-    get_jwt_identity,
-)
-from flask_cors import CORS  # a security layer of the browsers
-from flasgger import Swagger
-from models.models import Users, db, Author, Book, Publisher, Publication_Details
-from werkzeug.security import generate_password_hash, check_password_hash
-from urllib.parse import urlparse, parse_qs
-from config.config import Config
-from functools import wraps
-from isbnlib import desc, cover, meta
-
-app = Flask(__name__)
-app.config.from_object(Config)
-
-db.init_app(app)  # initialise the database
-CORS(app, resources=Config.CORS_RESOURCES)
-jwt = JWTManager(app)
-
-base_dir = os.path.abspath(os.path.dirname(__file__))
-swagger = Swagger(app, template_file=os.path.join(base_dir, "config", "swagger.yaml"))
+from models.models import Users, Book, Publication_Details, Author
+from config.config import *
 
 
 def is_admin():
@@ -50,7 +15,7 @@ def admin_required(fn):
     @jwt_required()  # Ensure authentication
     def wrapper(*args, **kwargs):
         user_id = get_jwt_identity()
-        user = Users.query.get(user_id)  # get user from db
+        user = Users.query.get(user_id)  # get user from database
         if not user or not user.admin:  # check if you have admin permission
             return jsonify({"msg": "Admin access required"}), 403
         return fn(*args, **kwargs)
@@ -59,37 +24,32 @@ def admin_required(fn):
 
 
 # Login Route
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
-    if request.method == "POST":  # we save the email,
-        email = request.json.get("email")  # pw what we typed
-        password = request.json.get("password")  # in swagger in variables
+    if request.method == "POST":
+        email = request.json.get("email")
+        password = request.json.get("password")
 
     try:
-        user = Users.query.filter_by(
-            email=email
-        ).first()  # it searches for the first email
-        # in the db that matches with the variable
+        user = Users.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
-            access_token = create_access_token(
-                identity=str(user.user_id)
-            )  # generate jwt token if email and pw was correct like in db
+            access_token = create_access_token(identity=str(user.user_id))
 
             return jsonify(
                 {
-                    "access_token": access_token.decode("utf-8"),
+                    "access_token": access_token,
                     "message": "User successfully logged in.",
                 }
             )
         else:
-            return {"Invalid email or password.."}, 401  # unauthorized
+            return jsonify({"message": "Invalid email or password"}), 401
 
     except Exception as e:
         db.session.rollback()
         print(f"Bug during searching for User: {e}")
-        return "An error occurred", 500
+        return jsonify({"message": "An error occurred"}), 500
 
-    return "Please provide your login details."
+    return jsonify({"message": "Please provide your login details"}), 400
 
 
 @app.route("/register", methods=["POST"])
@@ -105,17 +65,19 @@ def register():
             email=request.json.get("email"),
             password=hashed_password,  # the hashed password will be saved here
         )
-
         db.session.add(create_user)
         db.session.commit()
-        return jsonify({"message": "User successfully registered."}), 200
 
+        # Return user details after successful registration
         return (
             jsonify(
                 {
-                    "first_name": create_user.first_name,
-                    "last_name": create_user.last_name,
-                    "email": create_user.email,
+                    "message": "User successfully registered.",
+                    "user": {
+                        "first_name": create_user.first_name,
+                        "last_name": create_user.last_name,
+                        "email": create_user.email,
+                    },
                 }
             ),
             200,
@@ -124,7 +86,7 @@ def register():
     except Exception as e:
         db.session.rollback()
         print(f"Bug during creating User: {e}")
-    return "An error occurred during registration"
+        return jsonify({"message": "An error occurred during registration"}), 500
 
 
 @app.route("/users", methods=["GET"])
@@ -264,7 +226,9 @@ def show_author(id):
     except Exception as e:
         print(f"Error retrieving author: {e}")
         return (
-            jsonify({"message": "An error occurred while retrieving the author"}), 500,)
+            jsonify({"message": "An error occurred while retrieving the author"}),
+            500,
+        )
 
 
 @app.route("/author", methods=["PUT"])

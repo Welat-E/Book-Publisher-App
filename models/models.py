@@ -1,21 +1,12 @@
+import sys
 import os
-from flask import Flask
-from flask_login import UserMixin
-from sqlalchemy.ext.hybrid import hybrid_property
-from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
-from passlib.context import CryptContext
-from datetime import timedelta
-from flask_cors import CORS
-#from flask_migrate import Migrate
 
-load_dotenv()
+# Add the project root directory to sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, ".."))
+sys.path.append(project_root)
 
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
-
-# starting database
-db = SQLAlchemy()
+from config.config import *
 
 
 class Users(db.Model, UserMixin):
@@ -27,8 +18,12 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column("password", db.String, nullable=False)
 
-    authors = db.relationship("Author", back_populates="user", lazy=True, cascade="all, delete-orphan")
-    books = db.relationship("Book", back_populates="user", lazy=True, cascade="all, delete-orphan")
+    authors = db.relationship(
+        "Author", back_populates="user", lazy=True, cascade="all, delete-orphan"
+    )
+    books = db.relationship(
+        "Book", back_populates="user", lazy=True, cascade="all, delete-orphan"
+    )
     publishers = db.relationship("Publisher", back_populates="user", lazy=True)
 
 
@@ -41,9 +36,10 @@ class Author(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("Users.user_id"))
 
     user = db.relationship("Users", back_populates="authors")
-    publication_details = db.relationship("Publication_Details", back_populates="author", lazy=True)
+    publication_details = db.relationship(
+        "Publication_Details", back_populates="author", lazy=True
+    )
     books = db.relationship("Book", back_populates="author", lazy=True)
-    
 
 
 class Book(db.Model):
@@ -58,7 +54,9 @@ class Book(db.Model):
 
     user = db.relationship("Users", back_populates="books")
     author = db.relationship("Author", back_populates="books")
-    publication_details = db.relationship("Publication_Details", back_populates="book", lazy=True)
+    publication_details = db.relationship(
+        "Publication_Details", back_populates="book", lazy=True
+    )
 
 
 class Publication_Details(db.Model):
@@ -87,5 +85,5 @@ class Publisher(db.Model):
 
 # create database
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()

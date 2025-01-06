@@ -1,0 +1,1 @@
+#creating class and if else statements / create singleton for that config and instance
